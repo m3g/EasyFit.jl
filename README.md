@@ -129,7 +129,7 @@ julia> fitquad(x,y)  # or fitquadratic(x,y)
        b = 0.07985866671623199
        c = 0.08681962205579699
 
- Pearson correlation, R = 0.9591045325089623
+ Pearson correlation coefficient, R = 0.765338307304594
 
  Predicted y = [0.08910633345247763, 0.08943732276526263...
  Residues = [0.07660191693062993, 0.07143385689027287...
@@ -156,7 +156,7 @@ julia> fitcubic(x,y)
        c = 1.431666717127516
        d = -0.10389199522825227
 
- Pearson correlation, R = 0.9636627003609293
+ Pearson correlation coefficient, R = 0.765338307304594
 
  Predicted Y: ypred = [0.024757602237563042, 0.1762724543346461...
  residues = [-0.021614675301217884, 0.0668157091306878...
@@ -182,7 +182,7 @@ julia> fitexp(x,y) # or fitexponential
  With: A = 0.08309782657193134
        b = 0.4408664103095801
 
- Pearson correlation, R = 0.957162526367073
+ Pearson correlation coefficient, R = 0.765338307304594
 
  Predicted Y: ypred = [0.10558554154948542, 0.16605481935145136...
  residues = [0.059213264010704494, 0.056598074147493044...
@@ -205,7 +205,7 @@ julia> fit = fitexp(x,y,n=3)
  With: A = [2.0447736471832363e-16, 3.165225832379937, -3.2171314371600785]
        b = [0.02763465220057311, -46969.25088088338, -4.403370258345724]
 
- Pearson correlation, R = 0.9835776339692254
+ Pearson correlation coefficient, R = 0.765338307304594
 
  Predicted Y: ypred = [0.024313571992034433, 0.1635108558614995...
  residues = [-0.022058705546746493, 0.05405411065754118...

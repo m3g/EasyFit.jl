@@ -1,0 +1,4 @@
+name = "EasyFit"
+uuid = "fde71243-0cda-4261-b7c7-4845bd106b21"
+authors = ["Leandro Martinez <leandro@iqm.unicamp.br>"]
+version = "0.1.0"

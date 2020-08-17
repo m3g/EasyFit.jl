@@ -26,16 +26,10 @@ julia> using EasyFit
 - [Linear fit](#linear)
 
 <a name="linear"/>
+
 ## Linear fit
 
-Teste
-
-## Usage
-
-The output `fit` structures contains the fitted parameters in all cases.
-
-
-*Linear fitting*
+To perform a linear fitting, do:
 
 ```julia
 julia> x = sort(rand(10)); y = sort(rand(10)); # some data

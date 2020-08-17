@@ -23,11 +23,11 @@ julia> using EasyFit
 
 ## Contents
 
-[Linear fit](#linear)
+- [Linear fit](#linear)
 
+<a name="linear"/>
+## Linear fit
 
-<a name="linear">
-### Linear fit
 Teste
 
 ## Usage

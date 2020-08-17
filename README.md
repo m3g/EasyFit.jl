@@ -1,9 +1,9 @@
 # EasyFit
 
-Easy interface for obtaining fits for 2D data.
+Easy interface for obtaining fits of 2D data.
 
 The purpose of this package is to provide a very simple interface to obtain
-some of the most common fits to 2D data. Currently, simple fitting functions
+some of the most common fits of 2D data. Currently, simple fitting functions
 are available for linear, quadratic, cubic, exponential, and spline fits.
 
 On the background this interface uses the [LsqFit](https://github.com/JuliaNLSolvers/LsqFit.jl)

@@ -24,8 +24,7 @@ module EasyFit
   function finexy(X,fine,model,fit)
     Xmin = minimum(X)
     Xmax = maximum(X)
-    x = collect(0:(Xmax-Xmin)/fine:Xmax)
-    @. x = x + Xmin
+    x = collect(Xmin:(Xmax-Xmin)/fine:Xmax)
     y = model(x,fit.param)
     ypred = model(X,fit.param)
     return x, y, ypred

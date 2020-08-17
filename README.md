@@ -29,7 +29,7 @@ The output `fit` structures contains the fitted parameters in all cases.
 *Linear fitting*
 
 ```julia
-julia> x = sort(rand(10)); y = sort(rand(10));
+julia> x = sort(rand(10)); y = sort(rand(10)); # some data
 
 julia> fit = fitlinear(x,y)
 
@@ -47,15 +47,14 @@ julia> fit = fitlinear(x,y)
 
  -------------------------------------------- 
 
-
 ```
 
 *Quadratic fitting*
 
 ```julia
-julia> x = sort(rand(10)); y = sort(rand(10)).^2;
+julia> x = sort(rand(10)); y = sort(rand(10)).^2; # some data
 
-julia> EasyFit.fitquad(x,y)
+julia> fitquad(x,y)  # or fitquadratic(x,y)
 
  ------------------- Quadratic Fit ------------- 
 
@@ -72,10 +71,23 @@ julia> EasyFit.fitquad(x,y)
 
  ----------------------------------------------- 
 
-
 ```
 
+* Other fitting functions *
 
+Other fitting functions avaiable are:
+
+```julia
+julia> fitcubic(x,y)
+          ...
+julia> fitexp(x,y) # or fitexponential(x,y)
+          ...
+julia> fitexp(x,y,n=3) # or fitexponential(x,y,n=3) -- for multiple exponentials 
+          ...
+julia> fitspline(x,y) # smoothness can be controled by fitspline(x,y,fine=1000)
+          ...
+
+```
 
 
 

@@ -17,6 +17,27 @@ module EasyFit
     return p0
   end
 
+  #
+  # Common functions, to return a fine grid and the pearson coefficient
+  # 
+
+  function finexy(X,fine,model,fit)
+    Xmin = minimum(X)
+    Xmax = maximum(X)
+    x = collect(0:(Xmax-Xmin)/fine:Xmax)
+    @. x = x + Xmin
+    y = model(x,fit.param)
+    ypred = model(X,fit.param)
+    return x, y, ypred
+  end
+
+  function pearson(X,Y,model,fit)
+    ypred = similar(Y) 
+    ypred = model(X,fit.param)
+    R = Statistics.cor(Y,ypred)
+    return R
+  end
+
   # 
   # Linear fit
   #
@@ -25,19 +46,19 @@ module EasyFit
     a :: Float64
     b :: Float64
     R :: Float64
+    x :: Vector{Float64}
     y :: Vector{Float64}
-    residue :: Vector{Float64}
+    ypred :: Vector{Float64}
+    residues :: Vector{Float64}
   end
 
   function fitlinear(X :: Vectors, Y :: Vectors)
     @. model(x,p) = p[1]*x + p[2]
     p0 = initP(2)
     fit = curve_fit(model, X, Y, p0)
-    y = similar(Y)
-    y = model(X,fit.param)
-    R = Statistics.cor(Y,y)^2
-    return Linear(fit.param[1],fit.param[2],
-                  R,y,fit.resid)
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,length(X),model,fit)
+    return Linear(fit.param...,R,x,y,ypred,fit.resid)
   end
 
   function Base.show( io :: IO, fit :: Linear )
@@ -51,8 +72,8 @@ module EasyFit
     println("")
     println(" Pearson correlation coefficient, R = ", fit.R)
     println("")
-    println(" Predicted y = [",fit.y[1],", ",fit.y[2],"...")
-    println(" Residues = [", fit.residue[1],", ",fit.residue[2],"...")
+    println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
+    println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
     println("")
     println(" -------------------------------------------- ")
   end
@@ -68,19 +89,19 @@ module EasyFit
     b :: Float64
     c :: Float64
     R :: Float64
+    x :: Vector{Float64}
     y :: Vector{Float64}
-    residue :: Vector{Float64}
+    ypred :: Vector{Float64}
+    residues :: Vector{Float64}
   end
 
-  function fitquadratic(X :: Vectors, Y :: Vectors)
+  function fitquadratic(X :: Vectors, Y :: Vectors; fine :: Int = 100)
     @. model(x,p) = p[1]*x^2 + p[2]*x + p[3]
     p0 = initP(3)
     fit = curve_fit(model, X, Y, p0)
-    y = similar(Y)
-    y = model(X,fit.param)
-    R = Statistics.cor(Y,y)^2
-    return Quadratic(fit.param[1],fit.param[2],fit.param[3],
-                     R,y,fit.resid)
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,fine,model,fit) 
+    return Quadratic(fit.param...,R,x,y,ypred,fit.resid)
   end
   const fitquad = fitquadratic
 
@@ -96,8 +117,8 @@ module EasyFit
     println("")
     println(" Square Pearson correlation, R = ", fit.R)
     println("")
-    println(" Predicted y = [",fit.y[1],", ",fit.y[2],"...")
-    println(" Residues = [", fit.residue[1],", ",fit.residue[2],"...")
+    println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
+    println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
     println("")
     println(" ----------------------------------------------- ")
   end
@@ -114,19 +135,19 @@ module EasyFit
     c :: Float64
     d :: Float64
     R :: Float64
+    x :: Vector{Float64}
     y :: Vector{Float64}
-    residue :: Vector{Float64}
+    ypred :: Vector{Float64}
+    residues :: Vector{Float64}
   end
 
-  function fitcubic(X :: Vectors, Y :: Vectors)
+  function fitcubic(X :: Vectors, Y :: Vectors; fine :: Int = 100)
     @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
     p0 = initP(4)
     fit = curve_fit(model, X, Y, p0)
-    y = similar(Y)
-    y = model(X,fit.param)
-    R = Statistics.cor(Y,y)^2
-    return Cubic(fit.param[1],fit.param[2],fit.param[3],fit.param[4],
-                 R,y,fit.resid)
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,fine,model,fit) 
+    return Cubic(fit.param...,R,x,y,ypred,fit.resid)
   end
 
   function Base.show( io :: IO, fit :: Cubic )
@@ -142,8 +163,8 @@ module EasyFit
     println("")
     println(" Square Pearson correlation, R = ", fit.R)
     println("")
-    println(" Predicted y = [",fit.y[1],", ",fit.y[2],"...")
-    println(" Residues = [", fit.residue[1],", ",fit.residue[2],"...")
+    println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
+    println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
     println("")
     println(" ----------------------------------------------- ")
   end
@@ -158,8 +179,10 @@ module EasyFit
     A :: Float64
     b :: Float64
     R :: Float64
+    x :: Vector{Float64}
     y :: Vector{Float64}
-    residue :: Vector{Float64}
+    ypred :: Vector{Float64}
+    residues :: Vector{Float64}
   end
 
   struct MultipleExponential
@@ -167,15 +190,17 @@ module EasyFit
     A :: Vector{Float64}
     b :: Vector{Float64}
     R :: Float64
+    x :: Vector{Float64}
     y :: Vector{Float64}
-    residue :: Vector{Float64}
+    ypred :: Vector{Float64}
+    residues :: Vector{Float64}
   end
 
   function sum_of_exps(x :: Numbers, p :: Vector{Float64})
     n = round(Int64,length(p)/2)
     f = 0.
     for i in 1:n
-      f = f + p[i]*exp(p[n+i]*x)
+      f = f + p[i]*exp(x/p[n+i])
     end
     return f
   end
@@ -187,19 +212,16 @@ module EasyFit
     return f
   end
 
-  function fitexponential(X :: Vectors, Y :: Vectors; n :: Int = 1)
+  function fitexponential(X :: Vectors, Y :: Vectors; n :: Int = 1, fine :: Int = 100)
     model(x,p) = exp_model(x,p)
     p0 = initP(2*n)
     fit = curve_fit(model, X, Y, p0)
-    y = similar(Y)
-    y = model(X,fit.param)
-    R = Statistics.cor(Y,y)^2
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,fine,model,fit) 
     if n == 1
-      return SingleExponential(fit.param[1],fit.param[2],
-                               R,y,fit.resid)
+      return SingleExponential(fit.param[1],fit.param[2],R,x,y,ypred,fit.resid)
     else
-      return MultipleExponential(n,fit.param[1:n],fit.param[n+1:2*n],
-                                 R,y,fit.resid)
+      return MultipleExponential(n,fit.param[1:n],fit.param[n+1:2*n],R,x,y,ypred,fit.resid)
     end
   end
   const fitexp = fitexponential
@@ -208,15 +230,15 @@ module EasyFit
     println("")
     println(" ------------ Single Exponential fit ----------- ")
     println("")
-    println(" Equation: y = A exp(b*x) ")
+    println(" Equation: y = A exp(x/b) ")
     println("")
     println(" With: A = ", fit.A)
     println("       b = ", fit.b)
     println("")
     println(" Square Pearson correlation, R = ", fit.R)
     println("")
-    println(" Predicted y = [",fit.y[1],", ",fit.y[2],"...")
-    println(" Residues = [", fit.residue[1],", ",fit.residue[2],"...")
+    println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
+    println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
     println("")
     println(" ----------------------------------------------- ")
   end
@@ -225,15 +247,15 @@ module EasyFit
     println("")
     println(" -------- Multiple-exponential fit ------------- ")
     println("")
-    println(" Equation: y = sum(A[i] exp(b[i]) for i in 1:$(fit.n) ] ")
+    println(" Equation: y = sum(A[i] exp(x/b[i]) for i in 1:$(fit.n) ] ")
     println("")
     println(" With: A = ", fit.A)
     println("       b = ", fit.b)
     println("")
     println(" Square Pearson correlation, R = ", fit.R)
     println("")
-    println(" Predicted y = [",fit.y[1],", ",fit.y[2],"...")
-    println(" Residues = [", fit.residue[1],", ",fit.residue[2],"...")
+    println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
+    println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
     println("")
     println(" ----------------------------------------------- ")
   end
@@ -245,8 +267,8 @@ module EasyFit
   #
  
   struct Spline
-    xs :: Vector{Float64}
-    ys :: Vector{Float64}
+    x :: Vector{Float64}
+    y :: Vector{Float64}
   end
 
   function fitspline(x :: Vectors, y :: Vectors; fine :: Int = 100)
@@ -255,16 +277,16 @@ module EasyFit
     itp = Interpolations.scale(interpolate(A, 
               (BSpline(Interpolations.Cubic(Natural(OnGrid()))), NoInterp())), t, 1:2)
     tfine = 1:length(x)/fine:length(x)
-    xs, ys = [itp(t,1) for t in tfine], [itp(t,2) for t in tfine]
-    return Spline(xs,ys)
+    x, y = [itp(t,1) for t in tfine], [itp(t,2) for t in tfine]
+    return Spline(x,y)
   end
 
   function Base.show( io :: IO, fit :: Spline )
     println("")
     println(" -------- Spline fit --------------------------- ")
     println("")
-    println(" x spline: xs = [",fit.xs[1],", ",fit.xs[2],"...")
-    println(" y spline: ys = [",fit.ys[1],", ",fit.ys[2],"...")
+    println(" x spline: x = [",fit.x[1],", ",fit.x[2],"...")
+    println(" y spline: y = [",fit.y[1],", ",fit.y[2],"...")
     println("")
     println(" ----------------------------------------------- ")
   end

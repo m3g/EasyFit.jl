@@ -21,6 +21,15 @@ julia> using EasyFit
 
 ```
 
+## Contents
+
+[Linear fit](#linear)
+
+
+<a name="linear">
+### Linear fit
+Teste
+
 ## Usage
 
 The output `fit` structures contains the fitted parameters in all cases.
@@ -48,6 +57,37 @@ julia> fit = fitlinear(x,y)
  -------------------------------------------- 
 
 ```
+
+The `fit` data structure which comes out of `fitlinear` contains the output data with
+the same names as shown in the above output:
+
+```julia
+julia> fit.a
+0.9245529646308137
+
+julia> fit.b
+0.08608398402393584
+
+julia> fit.R
+0.765338307304594
+
+julia> fit.y[1:3]
+3-element Array{Float64,1}:
+ 0.14440450322996096
+ 0.18487629923663051
+ 0.27846925434751973
+
+julia> fit.residue[1:3]
+3-element Array{Float64,1}:
+ 0.143300680784536
+ 0.16615578533670206
+ 0.15671338348944602
+
+
+```
+
+
+
 
 *Quadratic fitting*
 

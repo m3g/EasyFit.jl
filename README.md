@@ -23,7 +23,19 @@ julia> using EasyFit
 
 ## Contents
 
+Read the `Linear Fit` section first, because all the others are similar, with
+few specificities:
+
 - [Linear fit](#linear)
+- [Quadratic fit](#quad)
+- [Cubic fit](#cubic)
+- [Exponential fit](#exp)
+- [Splines](#splines)
+
+All functions except the linear fits accept an additional keyword called `fine`, which 
+determines how many points the output vectors of the fit will have, such that the plots
+of the fits are smooth. By default, `fine=100 , which means that the fits will have 
+100 times the number of points of the original data. 
 
 <a name="linear"/>
 
@@ -50,6 +62,7 @@ julia> fit = fitlinear(x,y)
 
  -------------------------------------------- 
 
+
 ```
 
 The `fit` data structure which comes out of `fitlinear` contains the output data with
@@ -65,29 +78,28 @@ julia> fit.b
 julia> fit.R
 0.765338307304594
 
-julia> fit.y[1:3]
-3-element Array{Float64,1}:
- 0.14440450322996096
- 0.18487629923663051
- 0.27846925434751973
 
-julia> fit.residue[1:3]
-3-element Array{Float64,1}:
- 0.143300680784536
- 0.16615578533670206
- 0.15671338348944602
+```
+
+The `fit.x` and `fit.y` vectors can be used for plotting the results:
+
+```julia
+julia> using Plots
+
+julia> scatter(x,y) # the original data
+
+julia> plot!(fit.x,fit.y) # the fit
 
 
 ```
 
+<a name="quad"/>
 
+## Quadratic fit
 
-
-*Quadratic fitting*
+Use the `fitquad` function:
 
 ```julia
-julia> x = sort(rand(10)); y = sort(rand(10)).^2; # some data
-
 julia> fitquad(x,y)  # or fitquadratic(x,y)
 
  ------------------- Quadratic Fit ------------- 
@@ -107,21 +119,115 @@ julia> fitquad(x,y)  # or fitquadratic(x,y)
 
 ```
 
-*Other fitting functions*
+<a name="cubic"/>
 
-Other fitting functions avaiable are:
+## Cubic fit
+
+Use the `fitcubic` function:
 
 ```julia
-julia> fitcubic(x,y)
-          ...
-julia> fitexp(x,y) # or fitexponential(x,y)
-          ...
-julia> fitexp(x,y,n=3) # or fitexponential(x,y,n=3) -- for multiple exponentials 
-          ...
-julia> fitspline(x,y) # smoothness can be controled by fitspline(x,y,fine=1000)
-          ...
+julia> fitcubic(x,y) 
+
+ ------------------- Cubic Fit ----------------- 
+
+ Equation: y = ax^3 + bx^2 + cx + d 
+
+ With: a = 1.6860182468269271
+       b = -2.197790204605215
+       c = 1.431666717127516
+       d = -0.10389199522825227
+
+ Square Pearson correlation, R = 0.9636627003609293
+
+ Predicted Y: ypred = [0.024757602237563042, 0.1762724543346461...
+ residues = [-0.021614675301217884, 0.0668157091306878...
+
+ ----------------------------------------------- 
+
 
 ```
+
+<a name="exp"/>
+
+## Exponential fits
+
+Use the `fitexp` function:
+
+```julia
+julia> fitexp(x,y) # or fitexponential
+
+ ------------ Single Exponential fit ----------- 
+
+ Equation: y = A exp(x/b) 
+
+ With: A = 0.08309782657193134
+       b = 0.4408664103095801
+
+ Square Pearson correlation, R = 0.957162526367073
+
+ Predicted Y: ypred = [0.10558554154948542, 0.16605481935145136...
+ residues = [0.059213264010704494, 0.056598074147493044...
+
+ ----------------------------------------------- 
+
+
+```
+
+or add `n=N` for a multiple-exponential fit:
+
+```julia
+
+julia> fit = EasyFit.fitexp(x,y,n=3)
+
+ -------- Multiple-exponential fit ------------- 
+
+ Equation: y = sum(A[i] exp(x/b[i]) for i in 1:3 ] 
+
+ With: A = [2.0447736471832363e-16, 3.165225832379937, -3.2171314371600785]
+       b = [0.02763465220057311, -46969.25088088338, -4.403370258345724]
+
+ Square Pearson correlation, R = 0.9835776339692254
+
+ Predicted Y: ypred = [0.024313571992034433, 0.1635108558614995...
+ residues = [-0.022058705546746493, 0.05405411065754118...
+
+ ----------------------------------------------- 
+
+```
+
+!!! Warning: exponential fits can be tricky. Run multiple times (which
+    generates new initial points) if you don't like the result.
+
+
+<a name="spline"/>
+
+## Splines
+
+Use the `fitspline` function:
+
+```julia
+
+julia> fit = EasyFit.fitspline(x,y)
+
+ -------- Spline fit --------------------------- 
+
+ x spline: x = [0.10558878272489601, 0.1305310750202113...
+ y spline: y = [0.046372277538780926, 0.05201906296544364...
+
+ ----------------------------------------------- 
+
+```
+
+Use `plot(fit.x,fit.y)` to plot the spline.
+
+
+
+
+
+
+
+
+
 
 
 

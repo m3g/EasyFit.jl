@@ -26,34 +26,17 @@ julia> using EasyFit
 Read the `Linear fit` section first, because all the others are similar, with
 few specificities:
 
-- [Example output](#example)
 - [Linear fit](#linear)
 - [Quadratic fit](#quad)
 - [Cubic fit](#cubic)
 - [Exponential fit](#exp)
 - [Splines](#splines)
+- [Example output](#example)
 
 All functions except the linear fits accept an additional keyword called `fine`, which 
 determines how many points the output vectors of the fit will have, such that the plots
 of the fits are smooth. By default, `fine=100` , which means that the fits will have 
 100 times the number of points of the original data. 
-
-<a name="linear"/>
-
-## Example output:
-
-This figure was obtained using `Plots`, after obtaining a fit of each type, with
-
-```julia
-julia> scatter!(x,y) # plot original data
-julia> plot!(fit.x,fit.y) # plot the resulting fit
-
-```
-
-<img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.png">
-
-The complete script is available at: 
-[plots.jl](https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
 
 
 <a name="linear"/>
@@ -239,6 +222,23 @@ julia> fit = fitspline(x,y)
 
 Use `plot(fit.x,fit.y)` to plot the spline.
 
+
+<a name="example"/>
+
+## Example output:
+
+This figure was obtained using `Plots`, after obtaining a fit of each type, with
+
+```julia
+julia> scatter!(x,y) # plot original data
+julia> plot!(fit.x,fit.y) # plot the resulting fit
+
+```
+
+<img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.png">
+
+The complete script is available at: 
+[plots.jl](https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
 
 
 

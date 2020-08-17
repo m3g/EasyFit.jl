@@ -42,15 +42,18 @@ of the fits are smooth. By default, `fine=100 , which means that the fits will h
 
 ## Example output:
 
-This figure was obtained, after obtaining a fit of each type, using
+This figure was obtained using `Plots`, after obtaining a fit of each type, with
 
 ```julia
-julia> scatter!(x,y) 
-julia> plot!(fit.x,fit.y)
+julia> scatter!(x,y) # plot original data
+julia> plot!(fit.x,fit.y) # plot the resulting fit
 
 ```
 
-<img src="docs/plot.png">
+<img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.png">
+
+The complete script is available at: 
+[https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl](plots.jl) 
 
 
 <a name="linear"/>

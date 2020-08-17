@@ -28,7 +28,7 @@ The output `fit` structures contains the fitted parameters in all cases.
 
 *Linear fitting*
 
-```
+```julia
 julia> x = sort(rand(10)); y = sort(rand(10));
 
 julia> fit = fitlinear(x,y)
@@ -49,6 +49,33 @@ julia> fit = fitlinear(x,y)
 
 
 ```
+
+*Quadratic fitting*
+
+```julia
+julia> x = sort(rand(10)); y = sort(rand(10)).^2;
+
+julia> EasyFit.fitquad(x,y)
+
+ ------------------- Quadratic Fit ------------- 
+
+ Equation: y = ax^2 + bx + c 
+
+ With: a = 0.935408728589832
+       b = 0.07985866671623199
+       c = 0.08681962205579699
+
+ Square Pearson correlation, R = 0.9591045325089623
+
+ Predicted y = [0.08910633345247763, 0.08943732276526263...
+ Residues = [0.07660191693062993, 0.07143385689027287...
+
+ ----------------------------------------------- 
+
+
+```
+
+
 
 
 

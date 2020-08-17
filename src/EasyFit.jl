@@ -246,7 +246,7 @@ module EasyFit
     println("")
     println(" -------- Multiple-exponential fit ------------- ")
     println("")
-    println(" Equation: y = sum(A[i] exp(x/b[i]) for i in 1:$(fit.n) ] ")
+    println(" Equation: y = sum(A[i] exp(x/b[i]) for i in 1:$(fit.n)) ")
     println("")
     println(" With: A = ", fit.A)
     println("       b = ", fit.b)

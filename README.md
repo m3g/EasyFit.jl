@@ -200,7 +200,7 @@ julia> fit = EasyFit.fitexp(x,y,n=3)
 
  -------- Multiple-exponential fit ------------- 
 
- Equation: y = sum(A[i] exp(x/b[i]) for i in 1:3 ] 
+ Equation: y = sum(A[i] exp(x/b[i]) for i in 1:3) 
 
  With: A = [2.0447736471832363e-16, 3.165225832379937, -3.2171314371600785]
        b = [0.02763465220057311, -46969.25088088338, -4.403370258345724]

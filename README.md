@@ -53,7 +53,7 @@ julia> plot!(fit.x,fit.y) # plot the resulting fit
 <img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.png">
 
 The complete script is available at: 
-[https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl](plots.jl) 
+[plots.jl](#https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
 
 
 <a name="linear"/>

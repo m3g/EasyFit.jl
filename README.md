@@ -71,10 +71,10 @@ julia> fit = fitlinear(x,y)
 
  Equation: y = ax + b 
 
- With: a = 0.605935046984355
-       b = -0.027026434622431462
+ With: a = 0.9245529646308137
+       b = 0.08608398402393584
 
- Pearson correlation coefficient, R = 0.5630137802184002
+ Pearson correlation coefficient, R = 0.765338307304594
 
  Predicted y = [-0.009488291459872424, -0.004421217036880542...
  Residues = [-0.08666886144188027, -0.12771486789744962...

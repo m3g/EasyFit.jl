@@ -42,7 +42,15 @@ of the fits are smooth. By default, `fine=100 , which means that the fits will h
 
 ## Example output:
 
+This figure was obtained, after obtaining a fit of each type, using
 
+```julia
+julia> scatter!(x,y) 
+julia> plot!(fit.x,fit.y)
+
+```
+
+<img src="docs/plot.png">
 
 
 <a name="linear"/>

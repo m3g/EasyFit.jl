@@ -23,7 +23,7 @@ julia> using EasyFit
 
 ## Contents
 
-Read the `Linear Fit` section first, because all the others are similar, with
+Read the `Linear fit` section first, because all the others are similar, with
 few specificities:
 
 - [Example output](#example)
@@ -35,7 +35,7 @@ few specificities:
 
 All functions except the linear fits accept an additional keyword called `fine`, which 
 determines how many points the output vectors of the fit will have, such that the plots
-of the fits are smooth. By default, `fine=100 , which means that the fits will have 
+of the fits are smooth. By default, `fine=100` , which means that the fits will have 
 100 times the number of points of the original data. 
 
 <a name="linear"/>

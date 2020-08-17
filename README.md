@@ -73,7 +73,7 @@ julia> fitquad(x,y)  # or fitquadratic(x,y)
 
 ```
 
-* Other fitting functions *
+*Other fitting functions*
 
 Other fitting functions avaiable are:
 

@@ -196,7 +196,7 @@ or add `n=N` for a multiple-exponential fit:
 
 ```julia
 
-julia> fit = EasyFit.fitexp(x,y,n=3)
+julia> fit = fitexp(x,y,n=3)
 
  -------- Multiple-exponential fit ------------- 
 
@@ -226,7 +226,7 @@ Use the `fitspline` function:
 
 ```julia
 
-julia> fit = EasyFit.fitspline(x,y)
+julia> fit = fitspline(x,y)
 
  -------- Spline fit --------------------------- 
 

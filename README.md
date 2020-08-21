@@ -251,7 +251,7 @@ julia> fitexp(x,y,Options(maxtrials=1000))
 
 Available options:
 
-| keyword | Type | Default value | Meaning | Example |
+| Keyword | Type | Default value | Meaning | Example |
 |:-------:|:----:|:-------------:|:--------|:--------|
 | `p0_range`  | `Vector{Float64,2}`  | `[-1.,1.]`  | Range of gereneration of initial random parameters. | `fitexp(x,y,Options(p0_range=[-100.,100.]))` |
 | `fine`  | `Int`| 100           | Number of points of fit to smooth plot. | `fitexp(x,y,Options(fine=200))` |

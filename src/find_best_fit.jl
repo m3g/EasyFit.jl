@@ -6,7 +6,7 @@ function find_best_fit(model, X, Y, np, options)
   best = +Inf
   nbest = 0
   ntrial = 1
-  while nbest <= options.nbest && ntrial <= options.maxtrial
+  while nbest <= options.nbest && ntrial <= options.maxtrials
     ntrial += 1
     try 
       p0 = initP(np,options)

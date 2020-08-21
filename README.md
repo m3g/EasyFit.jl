@@ -251,13 +251,13 @@ julia> fitexp(x,y,Options(maxtrials=1000))
 
 Available options:
 
-| Keyword | Type | Default value | Meaning | Example |
-|:-------:|:----:|:-------------:|:--------|:--------|
-| `p0_range`  | `Vector{Float64,2}`  | `[-1.,1.]`  | Range of gereneration of initial random parameters. | `fitexp(x,y,Options(p0_range=[-100.,100.]))` |
-| `fine`  | `Int`| 100           | Number of points of fit to smooth plot. | `fitexp(x,y,Options(fine=200))` |
-| `nbest` | `Int`| 3  | Number of repetitions of best solution in global search. | `fitexp(x,y,Options(nbest=10))` |
-| `besttol` | `Float64`| 1e-4  | Similarity of the sum of residues of two solutions such that they are considered the same | `fitexp(x,y,Options(besttol=1e-5)` |
-| `maxtrial`  | `Int`| 100  | Maximum number of trials in global search | `fitexp(x,y,Options(maxtrial=1000))` |
+| Keyword | Type | Default value | Meaning |
+|:-------:|:----:|:-------------:|:--------|
+| `p0_range`  | `Vector{Float64,2}`  | `[-1.,1.]`  | Range of gereneration of initial random parameters. |
+| `fine`  | `Int`| 100           | Number of points of fit to smooth plot. |
+| `nbest` | `Int`| 3  | Number of repetitions of best solution in global search. |
+| `besttol` | `Float64`| 1e-4  | Similarity of the sum of residues of two solutions such that they are considered the same |
+| `maxtrial`  | `Int`| 100  | Maximum number of trials in global search |
 
 
 

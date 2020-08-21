@@ -1,5 +1,6 @@
 
 using EasyFit
+using Plots
 
 x = sort(rand(10)) .- 0.5
 y = sort(rand(10)) .- 0.5
@@ -28,14 +29,14 @@ fit = fitcubic(x,y2)
 plot!(fit.x,fit.y,label="",linewidth=2,subplot=sp)
 
 sp=4
-y2 = 0.3*exp.(y)
+y2 = 0.3*exp.(5*y)
 plot!(title="Mono-exponential fit",subplot=sp)
 scatter!(x,y2,label="",subplot=sp)
 fit = fitexp(x,y2)
 plot!(fit.x,fit.y,label="",linewidth=2,subplot=sp)
 
 sp=5
-y2 = 0.3*exp.(y) + 0.7*exp.(y2)
+y2 = 0.3*exp.(5*y) + 0.7*exp.(3*y2)
 plot!(title="Bi-exponential fit",subplot=sp)
 scatter!(x,y2,label="",subplot=sp)
 fit = fitexp(x,y2,n=2)

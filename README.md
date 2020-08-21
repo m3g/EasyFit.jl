@@ -8,7 +8,8 @@ are available for linear, quadratic, cubic, exponential, and spline fits.
 
 On the background this interface uses the [LsqFit](https://github.com/JuliaNLSolvers/LsqFit.jl)
 and [Interpolations](https://github.com/JuliaMath/Interpolations.jl), which are already
-quite easy to use.
+quite easy to use. Additionally, EasyFit contains a simple globalization
+heuristic, such that good non-linear fits are obtained often. 
 
 Our aim is to provide a package for quick fits without having to think about the code.
 
@@ -33,10 +34,8 @@ few specificities:
 - [Splines](#splines)
 - [Example output](#example)
 
-All functions except the linear fits accept an additional keyword called `fine`, which 
-determines how many points the output vectors of the fit will have, such that the plots
-of the fits are smooth. By default, `fine=100` , which means that the fits will have 
-100 times the number of points of the original data. 
+Additional options:
+- [Options](#options)
 
 
 <a name="linear"/>
@@ -48,21 +47,21 @@ To perform a linear fitting, do:
 ```julia
 julia> x = sort(rand(10)); y = sort(rand(10)); # some data
 
-julia> fit = fitlinear(x,y)
-
- ------------------- Linear Fit ------------- 
-
- Equation: y = ax + b 
-
- With: a = 0.9245529646308137
-       b = 0.08608398402393584
-
- Pearson correlation coefficient, R = 0.765338307304594
-
- Predicted y = [-0.009488291459872424, -0.004421217036880542...
- Residues = [-0.08666886144188027, -0.12771486789744962...
-
- -------------------------------------------- 
+#julia> fit = fitlinear(x,y)
+#
+# ------------------- Linear Fit ------------- 
+#
+# Equation: y = ax + b 
+#
+# With: a = 0.9245529646308137
+#       b = 0.08608398402393584
+#
+# Pearson correlation coefficient, R = 0.765338307304594
+#
+# Predicted y = [-0.009488291459872424, -0.004421217036880542... 
+# Residues = [-0.08666886144188027, -0.12771486789744962... 
+#
+# -------------------------------------------- 
 
 
 ```
@@ -160,10 +159,11 @@ julia> fitexp(x,y) # or fitexponential
 
  ------------ Single Exponential fit ----------- 
 
- Equation: y = A exp(x/b) 
+ Equation: y = A exp(x/b) + C
 
  With: A = 0.08309782657193134
        b = 0.4408664103095801
+       C = 1.4408664103095801
 
  Pearson correlation coefficient, R = 0.765338307304594
 
@@ -183,10 +183,11 @@ julia> fit = fitexp(x,y,n=3)
 
  -------- Multiple-exponential fit ------------- 
 
- Equation: y = sum(A[i] exp(x/b[i]) for i in 1:3) 
+ Equation: y = sum(A[i] exp(x/b[i]) for i in 1:3) + C
 
  With: A = [2.0447736471832363e-16, 3.165225832379937, -3.2171314371600785]
        b = [0.02763465220057311, -46969.25088088338, -4.403370258345724]
+       C = 3.543252432454542
 
  Pearson correlation coefficient, R = 0.765338307304594
 
@@ -196,10 +197,6 @@ julia> fit = fitexp(x,y,n=3)
  ----------------------------------------------- 
 
 ```
-
-!!! Warning: exponential fits can be tricky. Run multiple times (which
-    generates new initial points) if you don't like the result.
-
 
 <a name="spline"/>
 
@@ -239,6 +236,26 @@ julia> plot!(fit.x,fit.y) # plot the resulting fit
 
 The complete script is available at: 
 [plots.jl](https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
+
+<a name="options"/>
+
+## Options
+
+It is possible to pass an optional set of parameters to the functions.
+Use, for example:
+
+```julia
+julia> fitexp(x,y,Options(maxtrials=1000))
+
+```
+
+Available options:
+
+| keyword | Type | Default value | Meaning | Example |
+|:-------:|:----:|:-------------:|:--------|:--------|
+| `fine`  | `Int`| 100           | Number of points of fit to smooth plot. | `fitexp(x,y,Options(fine=200))` |
+|---------|------|---------------|---------|---------|
+
 
 
 

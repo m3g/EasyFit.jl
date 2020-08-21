@@ -47,21 +47,21 @@ To perform a linear fitting, do:
 ```julia
 julia> x = sort(rand(10)); y = sort(rand(10)); # some data
 
-#julia> fit = fitlinear(x,y)
-#
-# ------------------- Linear Fit ------------- 
-#
-# Equation: y = ax + b 
-#
-# With: a = 0.9245529646308137
-#       b = 0.08608398402393584
-#
-# Pearson correlation coefficient, R = 0.765338307304594
-#
-# Predicted y = [-0.009488291459872424, -0.004421217036880542... 
-# Residues = [-0.08666886144188027, -0.12771486789744962... 
-#
-# -------------------------------------------- 
+julia> fit = fitlinear(x,y)
+
+ ------------------- Linear Fit ------------- 
+
+ Equation: y = ax + b 
+
+ With: a = 0.9245529646308137
+       b = 0.08608398402393584
+
+ Pearson correlation coefficient, R = 0.765338307304594
+
+ Predicted y = [-0.009488291459872424, -0.004421217036880542... 
+ Residues = [-0.08666886144188027, -0.12771486789744962... 
+
+ -------------------------------------------- 
 
 
 ```
@@ -253,8 +253,11 @@ Available options:
 
 | keyword | Type | Default value | Meaning | Example |
 |:-------:|:----:|:-------------:|:--------|:--------|
+| `p0_range`  | `Vector{Float64,2}`  | `[-1.,1.]`  | Range of gereneration of initial random parameters. | `fitexp(x,y,Options(p0_range=[-100.,100.]))` |
 | `fine`  | `Int`| 100           | Number of points of fit to smooth plot. | `fitexp(x,y,Options(fine=200))` |
-|---------|------|---------------|---------|---------|
+| `nbest` | `Int`| 3  | Number of repetitions of best solution in global search. | `fitexp(x,y,Options(nbest=10))` |
+| `besttol` | `Float64`| 1e-4  | Similarity of the sum of residues of two solutions such that they are considered the same | `fitexp(x,y,Options(besttol=1e-5)` |
+| `maxtrial`  | `Int`| 100  | Maximum number of trials in global search | `fitexp(x,y,Options(maxtrial=1000))` |
 
 
 

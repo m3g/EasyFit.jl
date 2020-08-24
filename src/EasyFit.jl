@@ -23,5 +23,6 @@ module EasyFit
   include("./cubic.jl")
   include("./exponential.jl")
   include("./spline.jl")
+  include("./movingaverage.jl")
 
 end 

@@ -32,6 +32,7 @@ few specificities:
 - [Cubic fit](#cubic)
 - [Exponential fit](#exp)
 - [Splines](#splines)
+- [Moving Averages](#movavg)
 - [Example output](#example)
 
 Additional options:
@@ -218,6 +219,32 @@ julia> fit = fitspline(x,y)
 ```
 
 Use `plot(fit.x,fit.y)` to plot the spline.
+
+<a name="movavg"/>
+
+## Splines
+
+Use the `movavg` function:
+
+```julia
+
+julia> ma = movavg(x,y,50)
+
+ ------------------- Moving Average ----------
+
+ Number of points averaged: 51 (± 25 points)
+
+ Pearson correlation coefficient, R = 0.9916417123050962
+
+ Averaged Y: y = [0.14243985510210114, 0.14809841636897675...
+ residues = [-0.14230394758154755, -0.12866864179092025...
+
+ --------------------------------------------
+
+
+```
+
+Use `plot(ma.x,ma.y)` to plot the moving average.
 
 
 <a name="example"/>

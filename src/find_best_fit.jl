@@ -6,10 +6,11 @@ function find_best_fit(model, X, Y, np, options)
   best = +Inf
   nbest = 0
   ntrial = 1
+  p0 = initP(np,options)
   while nbest <= options.nbest && ntrial <= options.maxtrials
     ntrial += 1
     try 
-      p0 = initP(np,options)
+      nextP!(p0,options)
       fit = curve_fit(model, X, Y, p0)
       sum_residues = sum(fit.resid.^2)
       if abs(sum_residues - best) < options.besttol
@@ -24,6 +25,9 @@ function find_best_fit(model, X, Y, np, options)
         best_fit = fit
       end
     catch msg
+      if options.debug
+        println(msg)
+      end
     end
   end
   return best_fit

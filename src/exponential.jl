@@ -50,7 +50,11 @@ function fitexponential(X :: Vectors, Y :: Vectors, options :: Options; n :: Int
     return SingleExponential(fit.param[1],fit.param[2],fit.param[3],
                              R,x,y,ypred,fit.resid)
   else
-    return MultipleExponential(n,fit.param[1:n],fit.param[n+1:2*n],fit.param[2*n+1],
+    ind = collect(1:n)
+    sort!(ind,by=i->fit.param[n+i])
+    A = fit.param[1:n][ind]
+    b = fit.param[n+1:2*n][ind]
+    return MultipleExponential(n,A,b,fit.param[2*n+1],
                                R,x,y,ypred,fit.resid)
   end
 end

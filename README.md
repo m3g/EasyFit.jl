@@ -222,9 +222,9 @@ Use `plot(fit.x,fit.y)` to plot the spline.
 
 <a name="movavg"/>
 
-## Splines
+## Moving Averages
 
-Use the `movavg` function:
+Use the `movavg` (or `movingaverage`) function:
 
 ```julia
 

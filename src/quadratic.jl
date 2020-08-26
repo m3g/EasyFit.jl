@@ -14,6 +14,7 @@ struct Quadratic
 end
 
 function fitquadratic(X :: Vectors, Y :: Vectors, options :: Options)
+  checkdata(X,Y)
   @. model(x,p) = p[1]*x^2 + p[2]*x + p[3]
   fit = find_best_fit(model, X, Y, 3, options)
   R = pearson(X,Y,model,fit)

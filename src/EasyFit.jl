@@ -12,6 +12,7 @@ module EasyFit
                   AbstractArray{Float64}}
 
   include("./Options.jl")
+  include("./checkdata.jl")
   include("./initP.jl")
   include("./nextP.jl")
   include("./finexy.jl")

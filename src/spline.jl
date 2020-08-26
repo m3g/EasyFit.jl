@@ -8,6 +8,7 @@ struct Spline
 end
 
 function fitspline(X :: Vectors, Y :: Vectors, options :: Options)
+  checkdata(X,Y)
   t = 1:length(X)
   A = hcat(X,Y)
   itp = Interpolations.scale(interpolate(A, 

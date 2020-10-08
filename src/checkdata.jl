@@ -3,13 +3,10 @@
 #
 
 function check_size(X,c)
-  if length(size(X)) > 1
-    if length(size(X)) == 2 && size(X,2) == 1
-      return vec(X)
-    end
+  if (length(size(X)) > 2) || (length(size(X)) == 2 && size(X,2) != 1)
     error(" Only 1D arrays are accepted, and got $c with dimensions = ",size(X))
   end
-  return X
+  return vec(copy(X))
 end
 
 function checkdata(X :: Vectors, Y :: Vectors)

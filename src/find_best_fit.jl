@@ -3,6 +3,7 @@
 #
 function find_best_fit(model, X, Y, np, options)
   local best_fit
+  local fit
   best = +Inf
   nbest = 0
   ntrial = 1
@@ -26,7 +27,7 @@ function find_best_fit(model, X, Y, np, options)
       end
     catch msg
       if options.debug
-        println(msg)
+        error("ERROR: $msg \n $fit")
       end
     end
   end

@@ -11,6 +11,7 @@ struct MovingAverage
 end
 
 function movingaverage( X :: Vectors, Y :: Vectors, n :: Int )
+  X, Y = checkdata(X,Y)
   if ! isodd(n)
     n = n + 1
   end

@@ -13,7 +13,7 @@ struct Linear
 end
 
 function fitlinear(X :: Vectors, Y :: Vectors, options :: Options)
-  checkdata(X,Y)
+  X, Y = checkdata(X,Y)
   @. model(x,p) = p[1]*x + p[2]
   p0 = initP(2,options)
   fit = curve_fit(model, X, Y, p0)

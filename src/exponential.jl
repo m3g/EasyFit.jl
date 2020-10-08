@@ -43,7 +43,7 @@ function exp_model(X :: Vectors, p :: Vector{Float64})
 end
 
 function fitexponential(X :: Vectors, Y :: Vectors, options :: Options; n :: Int = 1)
-  checkdata(X,Y)
+  X, Y = checkdata(X,Y)
   model(x,p) = exp_model(x,p)
   fit = find_best_fit(model,X,Y,2*n+1,options)
   R = pearson(X,Y,model,fit)

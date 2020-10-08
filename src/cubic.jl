@@ -15,7 +15,7 @@ struct Cubic
 end
 
 function fitcubic(X :: Vectors, Y :: Vectors, options :: Options)
-  checkdata(X,Y)
+  X, Y = checkdata(X,Y)
   @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
   fit = find_best_fit(model, X, Y, 4, options)
   R = pearson(X,Y,model,fit)

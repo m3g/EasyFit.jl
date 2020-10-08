@@ -33,6 +33,7 @@ function sum_of_exps(x :: Numbers, p :: Vector{Float64})
   end
   return f
 end
+
 function exp_model(X :: Vectors, p :: Vector{Float64}) 
   f = Vector{Float64}(undef,length(X))  
   for i in 1:length(X)

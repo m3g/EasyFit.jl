@@ -43,9 +43,31 @@ function exp_model(X :: Vectors, p :: Vector{Float64})
 end
 
 function fitexponential(X :: Vectors, Y :: Vectors, options :: Options; n :: Int = 1)
+  # Check data
   X, Y = checkdata(X,Y)
+  # Check bounds
+  lower = Vector{Float64}(undef,2*n+1)
+  upper = Vector{Float64}(undef,2*n+1)
+  if n == 1
+    lower[1] = lower_bound(options.lower.A,"A",Number)
+    lower[2] = lower_bound(options.lower.b,"b",Number)
+    lower[3] = lower_bound(options.lower.C,"C",Number)
+    upper[1] = upper_bound(options.upper.A,"A",Number)
+    upper[2] = upper_bound(options.upper.b,"b",Number)
+    upper[3] = upper_bound(options.upper.C,"C",Number)
+  else
+    @. lower[1:n] = lower_bound(options.lower.A,"A",Vector)
+    @. lower[n+1:2*n] = lower_bound(options.lower.b,"b",Vector)
+    lower[2*n+1] = lower_bound(options.lower.C,"C",Number)
+    @. upper[1:n] = upper_bound(options.upper.A,"A",Vector)
+    @. upper[n+1:2*n] = upper_bound(options.upper.b,"b",Vector)
+    upper[2*n+1] = upper_bound(options.upper.C,"C",Number)
+  end
+  # Model
   model(x,p) = exp_model(x,p)
-  fit = find_best_fit(model,X,Y,2*n+1,options)
+  # Fit
+  fit = find_best_fit(model,X,Y,2*n+1,options,lower,upper)
+  # Analyze and return
   R = pearson(X,Y,model,fit)
   x, y, ypred = finexy(X,options.fine,model,fit) 
   if n == 1
@@ -98,6 +120,11 @@ function Base.show( io :: IO, fit :: MultipleExponential )
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
   println("")
   println(" ----------------------------------------------- ")
+end
+
+function fitexp() 
+  println(" if n = 1: Equation: y = A exp(x/b) + C")
+  println(" if n > 1: Equation: y = sum(A[i] exp(x/b[i]) for i in 1:n + C ")
 end
 
 export fitexp, fitexponential

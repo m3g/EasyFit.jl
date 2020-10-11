@@ -43,4 +43,6 @@ function Base.show( io :: IO, fit :: Cubic )
   println(" ----------------------------------------------- ")
 end
 
+fitcubic() = println(" Equation: y = ax^3 + bx^2 + cx + d ")
+
 export fitcubic

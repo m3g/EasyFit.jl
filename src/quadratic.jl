@@ -43,4 +43,7 @@ function Base.show( io :: IO, fit :: Quadratic )
   println(" ----------------------------------------------- ")
 end
 
+fitquadratic() = println(" Equation: y = ax^2 + bx + c ")
+fitquad() = fitquadratic()
+
 export fitquad, fitquadratic

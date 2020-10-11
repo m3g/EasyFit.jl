@@ -11,10 +11,10 @@ module EasyFit
                   AbstractArray{Float32},
                   AbstractArray{Float64}}
 
+  include("./setbounds.jl")
   include("./Options.jl")
   include("./checkdata.jl")
   include("./initP.jl")
-  include("./nextP.jl")
   include("./finexy.jl")
   include("./pearson.jl")
   include("./find_best_fit.jl")

@@ -40,4 +40,6 @@ function Base.show( io :: IO, fit :: Linear )
   println(" -------------------------------------------- ")
 end
 
+fitlinear() = println(" Equation: y = ax + b ")
+
 export fitlinear

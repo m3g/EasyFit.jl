@@ -5,12 +5,8 @@ module EasyFit
   using Interpolations
   using Parameters
 
-  Numbers = Union{Int32,Int64,Float32,Float64}
-  Vectors = Union{AbstractArray{Int32},
-                  AbstractArray{Int64},
-                  AbstractArray{Float32},
-                  AbstractArray{Float64}}
-
+  include("./LowerUpper.jl")
+  include("./VarType.jl")
   include("./setbounds.jl")
   include("./Options.jl")
   include("./checkdata.jl")
@@ -19,6 +15,7 @@ module EasyFit
   include("./pearson.jl")
   include("./find_best_fit.jl")
 
+  include("./FitMethods.jl")
   include("./linear.jl")
   include("./quadratic.jl")
   include("./cubic.jl")

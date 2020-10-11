@@ -10,7 +10,7 @@ struct MovingAverage
   residues :: Vector{Float64}
 end
 
-function movingaverage( X :: Vectors, Y :: Vectors, n :: Int )
+function movingaverage( X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, n :: Int )
   X, Y = checkdata(X,Y)
   if ! isodd(n)
     n = n + 1
@@ -34,14 +34,14 @@ function movingaverage( X :: Vectors, Y :: Vectors, n :: Int )
   R = Statistics.cor(y,Y)
   return MovingAverage(n,X,y,R,residues)
 end
-function movingaverage(X :: Vectors, Y :: Vectors; n :: Int = 0)
+function movingaverage(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; n :: Int = 0)
   if n == 0
     error(" Please set n with movavg(x,y,n=10), for example. ")
   end
   return movingaverage(X,Y,n)
 end
-movavg(X :: Vectors, Y :: Vectors, n :: Int) = movingaverage(X,Y,n)
-movavg(X :: Vectors, Y :: Vectors; n :: Int = 0) = movingaverage(X,Y,n) 
+movavg(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, n :: Int) = movingaverage(X,Y,n)
+movavg(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; n :: Int = 0) = movingaverage(X,Y,n) 
 
 function Base.show( io :: IO, fit :: MovingAverage )
   println("")

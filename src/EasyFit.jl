@@ -16,11 +16,11 @@ module EasyFit
   include("./find_best_fit.jl")
 
   include("./FitMethods.jl")
-  include("./linear.jl")
-  include("./quadratic.jl")
-  include("./cubic.jl")
-  include("./exponential.jl")
-  include("./spline.jl")
+  include("./fitlinear.jl")
+  include("./fitquadratic.jl")
+  include("./fitcubic.jl")
+  include("./fitexponential.jl")
+  include("./fitspline.jl")
   include("./movingaverage.jl")
 
 end 

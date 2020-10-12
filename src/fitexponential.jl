@@ -65,7 +65,7 @@ fitexp(x,y,n=2,lower(a=[0.,0.],c=10.),upper(b=[-100.,-5.]))
 ```jldoctest
 julia> x = sort(rand(10)); y = rand()*exp.(sort(rand(10)));
 
-julia> fitexp(x,y,lower(c=0.),n=2)
+julia> fit = fitexp(x,y,lower(c=0.),n=2)
 
  -------- Multiple-exponential fit ------------- 
 

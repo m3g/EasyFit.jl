@@ -5,43 +5,64 @@
 struct MovingAverage
   n :: Int64
   x :: Vector{Float64}
-  y :: Vector{Float64}
   R :: Float64
   residues :: Vector{Float64}
 end
 
-function movingaverage( X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, n :: Int )
-  X, Y = checkdata(X,Y)
+"""
+
+`movingaverage(x,n)` or `movavg(x,n)`
+
+Computes a moving average of `x[i]` in the range `i±(n-1)/2`. If `n` is even, we do `n ←  n + 1`.
+
+# Example
+
+```jldoctest
+julia> x = rand(10);
+
+julia> movingaverage(x,3)
+
+ ------------------- Moving Average ----------
+
+ Number of points averaged: 3 (± 1 points)
+
+ Pearson correlation coefficient, R = 0.3532754137104625
+
+ Averaged X: x = [0.5807828672543551, 0.40496733381946143...
+ residues = [-0.22791917753944557, 0.4037347109743393...
+
+ --------------------------------------------
+```
+
+"""
+function movingaverage( X :: AbstractArray{<:Real}, n :: Int )
+  if n == 0
+    error(" Please set n with movavg(x,n=10), for example. ")
+  end
   if ! isodd(n)
     n = n + 1
   end
   delta = round(Int64,(n-1)/2)
-  nY = length(Y)
-  y = similar(Y) 
-  for i in 1:nY
+  nX = length(X)
+  x = similar(X) 
+  for i in 1:nX
     jmin = max(i-delta,1)
-    jmax = min(i+delta,nY)
-    y[i] = 0.
+    jmax = min(i+delta,nX)
+    x[i] = 0.
     for j in jmin:jmax
-      y[i] = y[i] + Y[j]
+      x[i] = x[i] + X[j]
     end
-    y[i] = y[i] / (jmax-jmin+1)
+    x[i] = x[i] / (jmax-jmin+1)
   end
-  residues = similar(Y)
-  for i in 1:nY
-    residues[i] = Y[i] - y[i]
+  residues = similar(X)
+  for i in 1:nX
+    residues[i] = X[i] - x[i]
   end
-  R = Statistics.cor(y,Y)
-  return MovingAverage(n,X,y,R,residues)
+  R = Statistics.cor(x,X)
+  return MovingAverage(n,x,R,residues)
 end
-function movingaverage(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; n :: Int = 0)
-  if n == 0
-    error(" Please set n with movavg(x,y,n=10), for example. ")
-  end
-  return movingaverage(X,Y,n)
-end
-movavg(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, n :: Int) = movingaverage(X,Y,n)
-movavg(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; n :: Int = 0) = movingaverage(X,Y,n) 
+movingaverage(X::AbstractArray{<:Real};n=Int=0) = movingaverage(X,n)
+movavg = movingaverage
 
 function Base.show( io :: IO, fit :: MovingAverage )
   println("")
@@ -51,7 +72,7 @@ function Base.show( io :: IO, fit :: MovingAverage )
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
   println("")
-  println(" Averaged Y: y = [",fit.y[1],", ",fit.y[2],"...")
+  println(" Averaged X: x = [",fit.x[1],", ",fit.x[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
   println("")
   println(" -------------------------------------------- ")

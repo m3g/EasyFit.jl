@@ -32,7 +32,7 @@ fitcubic(x,y, upper(a=1.,b=0.) )
 ```jldoctest
 julia> x = sort(rand(10)) ; y = sort(rand(10)).^3;
 
-julia> fitcubic(x,y,lower(d=5.),upper(d=6.))
+julia> fit = fitcubic(x,y,lower(d=5.),upper(d=6.))
 
  ------------------- Cubic Fit ----------------- 
 

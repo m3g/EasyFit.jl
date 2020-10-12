@@ -7,8 +7,32 @@ struct Spline
   y :: Vector{Float64}
 end
 
+"""
+
+`fitspline(x,y)`
+
+Computes a spline. 
+
+Use `fit = fitspline(x,y)`. `fit.x` and `fit.y` will contain
+the data points of the spline.  
+
+# Example
+
+```jldoctest
+julia> x = sort(rand(10)); y = rand(10);
+
+julia> fit = fitspline(x,y)
+
+ -------- Spline fit --------------------------- 
+
+ x spline: x = [0.05986115284955605, 0.0755869317846746...
+ y spline: y = [0.6749928175217872, 0.5711266179726132...
+
+ ----------------------------------------------- 
+```
+"""
 function fitspline(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, options :: Options)
-  X, Y = checkdata(X,Y)
+  X, Y = checkdata(X,Y,options)
   t = 1:length(X)
   A = hcat(X,Y)
   itp = Interpolations.scale(interpolate(A, 
@@ -30,3 +54,4 @@ function Base.show( io :: IO, fit :: Spline )
 end
 
 export fitspline
+

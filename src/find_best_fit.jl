@@ -12,9 +12,13 @@ function find_best_fit(f, ∇f, X, Y, np, options, lower, upper)
   p0 = Vector{Float64}(undef,np)
   while nbest <= options.nbest && ntrial <= options.maxtrials
     ntrial += 1
-    try 
-      initP!(p0,options,lower,upper)
+    initP!(p0,options,lower,upper)
+    if options.debug == false
       fit = SPGBox.spgbox!(p0, func, grad!, l=lower, u=upper) 
+    else
+      fit = SPGBox.spgbox!(p0, func, grad!, l=lower, u=upper, iprint=2) 
+    end
+    if fit.ierr == 0 
       if abs(fit.f - best) < options.besttol
         nbest = nbest + 1
         if fit.f < best
@@ -25,10 +29,6 @@ function find_best_fit(f, ∇f, X, Y, np, options, lower, upper)
         nbest = 1
         best = fit.f
         best_fit = fit
-      end
-    catch msg
-      if options.debug
-        error("ERROR: $msg \n $fit")
       end
     end
   end

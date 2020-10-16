@@ -7,5 +7,4 @@ function initP!(p0, options :: Options, lower, upper)
     pmax = min(options.p0_range[2],upper[i])
     p0[i] = pmin + rand()*(pmax-pmin)
   end
-  return p0
 end

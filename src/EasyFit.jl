@@ -1,10 +1,13 @@
 module EasyFit
   
   using Statistics
-  using LsqFit
   using Interpolations
   using Parameters
 
+  include("./SPGBox/SPGBox.jl")
+  include("./sq_residue.jl")
+
+  include("./evalpred.jl")
   include("./LowerUpper.jl")
   include("./VarType.jl")
   include("./setbounds.jl")

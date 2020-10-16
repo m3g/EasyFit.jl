@@ -3,6 +3,7 @@
 #
 
 struct Cubic
+  n :: Int64
   a :: Float64
   b :: Float64
   c :: Float64
@@ -10,8 +11,8 @@ struct Cubic
   R :: Float64
   x :: Vector{Float64}
   y :: Vector{Float64}
+  resid :: Float64
   ypred :: Vector{Float64}
-  residues :: Vector{Float64}
 end
 
 """
@@ -47,7 +48,6 @@ julia> fit = fitcubic(x,y,lower(d=5.),upper(d=6.))
  Average absolute residue = 0.0352610880828611
 
  Predicted Y: ypred = [-0.03381603021235922, 0.026984191488563257...
- residues = [-0.04019053809246011, 0.018920670738045653...
 
  ----------------------------------------------- 
 
@@ -65,13 +65,15 @@ function fitcubic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
            VarType(:d,Number,1) ]
   lower, upper = setbounds(vars,l,u)
   # Set model
-  @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
+  f = (x,p) -> p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
+  ∇f = (x,p) -> [ x^3, x^2, x, 1. ]
   # Fit
-  fit = find_best_fit(model, X, Y, 4, options, lower, upper)
+  fit = find_best_fit(f, ∇f, X, Y, length(vars), options, lower, upper)
   # Analyze results and return
-  R = pearson(X,Y,model,fit)
-  x, y, ypred = finexy(X,options.fine,model,fit) 
-  return Cubic(fit.param...,R,x,y,ypred,fit.resid)
+  ypred = evalpred(f,X,fit)
+  R = Statistics.cor(Y,ypred)
+  x, y = finexy(f,X,length(X),fit)  
+  return Cubic(length(X),fit.x...,R,x,y,fit.f,ypred)    
 end
 @FitMethods(fitcubic)
 
@@ -87,10 +89,9 @@ function Base.show( io :: IO, fit :: Cubic )
   println("       d = ", fit.d)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average absolute residue = ", sum(abs.(fit.residues))/length(fit.residues))
+  println(" Average absolute residue = ", fit.resid/fit.n)
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
-  println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
   println("")
   println(" ----------------------------------------------- ")
 end

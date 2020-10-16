@@ -1,9 +1,11 @@
 #
 # Perform multiple trials to find gloal minimum
 #
-function find_best_fit(model, X, Y, np, options, lower, upper)
+function find_best_fit(f, ∇f, X, Y, np, options, lower, upper)
   local best_fit
   local fit
+  func = (p) -> sq_residue(p, f, X, Y)
+  grad! = (p,g) -> sq_residue_grad!(p,f,∇f,X,Y,g)
   best = +Inf
   nbest = 0
   ntrial = 1
@@ -12,17 +14,16 @@ function find_best_fit(model, X, Y, np, options, lower, upper)
     ntrial += 1
     try 
       initP!(p0,options,lower,upper)
-      fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-      sum_residues = sum(fit.resid.^2)
-      if abs(sum_residues - best) < options.besttol
+      fit = SPGBox.spgbox!(p0, func, grad!, l=lower, u=upper) 
+      if abs(fit.f - best) < options.besttol
         nbest = nbest + 1
-        if sum_residues < best
-          best = sum_residues
+        if fit.f < best
+          best = fit.f
           best_fit = fit
         end
-      elseif sum_residues < best
+      elseif fit.f < best
         nbest = 1
-        best = sum_residues
+        best = fit.f
         best_fit = fit
       end
     catch msg

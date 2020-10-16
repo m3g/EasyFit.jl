@@ -64,7 +64,7 @@ function fitquadratic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   f = (x,p) -> p[1]*x^2 + p[2]*x + p[3]
   ∇f = (x,p) -> [ x^2, x, 1. ]
   # Fit
-  fit = find_best_fit(f, ∇f, X, Y, 3, options, lower, upper)
+  fit = find_best_fit(f, ∇f, X, Y, length(vars), options, lower, upper)
   # Analyze results and return
   ypred = evalpred(f,X,fit)
   R = Statistics.cor(Y,ypred)

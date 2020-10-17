@@ -3,11 +3,8 @@
   besttol :: Float64 = 1e-4
   maxtrials :: Int = 100
   fine :: Int = 100
-  p0_range :: Vector{Float64} = [ -1e10 , 1e10 ]
+  p0_range :: Vector{Float64} = [-1.,1.]
+  rand_std :: Float64 = 0.5
   debug :: Bool = false
-  spg_nitmax :: Int64 = 1000
-  spg_nfevalmax :: Int64 = 10000
-  spg_eps :: Float64 = 1.e-5
-  spg_iprint :: Int64 = 0
 end
 export Options

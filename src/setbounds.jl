@@ -30,13 +30,6 @@ function setbounds(vars,l,u)
     upper[idim:idim+var.dim-1] = check_upper_bound_input(var,getfield(u,var.field))
     idim += var.dim
   end
-  i = 0
-  for var in vars
-    i += 1
-    if lower[i] > upper[i]
-      error(" Error in bounds. Lower bound of '$(var.field)' greater than upper bound. ")
-    end
-  end
   return lower, upper
 end
 

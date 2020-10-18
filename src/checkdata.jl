@@ -16,7 +16,10 @@ function checkdata(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, optio
   X = check_size(X,"X")
   Y = check_size(Y,"Y")
   # Set some reasonable ranges for the initial guesses
-  options.p0_range[1] = minimum(Y) - 10*minimum(Y)
-  options.p0_range[2] = maximum(Y) + 10*maximum(Y)
+  if options.p0_range[1] ≈ 0. && options.p0_range[2] ≈ 0.
+    range = maximum(Y) - minimum(Y)
+    options.p0_range[1] = -100*range
+    options.p0_range[2] = +100*range
+  end
   return X, Y
 end

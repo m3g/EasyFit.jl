@@ -3,7 +3,7 @@
   besttol :: Float64 = 1e-4
   maxtrials :: Int = 100
   fine :: Int = 100
-  p0_range :: Vector{Float64} = [ -1e10 , 1e10 ]
+  p0_range :: Vector{Float64} = [ 0., 0. ]
   debug :: Bool = false
 end
 export Options

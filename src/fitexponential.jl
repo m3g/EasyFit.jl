@@ -123,7 +123,6 @@ function fitexponential(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
                                R,x,y,ypred,fit.resid)
   end
 end
-@FitMethodsExponential(fitexponential)
 fitexp = fitexponential
 
 function Base.show( io :: IO, fit :: SingleExponential )

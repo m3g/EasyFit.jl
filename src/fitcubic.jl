@@ -73,7 +73,6 @@ function fitcubic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   x, y, ypred = finexy(X,options.fine,model,fit) 
   return Cubic(fit.param...,R,x,y,ypred,fit.resid)
 end
-@FitMethods(fitcubic)
 
 function Base.show( io :: IO, fit :: Cubic )
   println("")

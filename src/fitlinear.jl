@@ -17,13 +17,10 @@ end
 
 Obtains the linear fit: ``y = a*x + b``
 
-Optional lower and upper bounds for a and b can be provided using, for example:
+Optional lower and upper bounds for a, and constant b can be provided using, for example:
 
 ```
-fitlinear(x,y, lower(b=0.), upper(a=5.) )
-fitlinear(x,y, lower(b=0.) )
-fitlinear(x,y, upper(b=0.) )
-fitlinear(x,y, upper(a=1.,b=0.) )
+fitlinear(x,y, lower(a=0.), b=3)
 ```
 
 # Examples
@@ -50,28 +47,41 @@ residues = [0.1613987313816987, 0.22309410865095275...
 ```
 """
 function fitlinear(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; 
-                   l :: lower = lower(), u :: upper = upper(), 
+                   l :: lower = lower(), u :: upper = upper(), b = nothing,
                    options :: Options = Options() )
   # Check data
   X, Y = checkdata(X,Y,options)
   # Set bounds
   vars = [ VarType(:a,Number,1), 
-           VarType(:b,Number,1) ]
+           VarType(:b,Nothing,1) ]
   lower, upper = setbounds(vars,l,u)
-  # Set model
-  @. model(x,p) = p[1]*x + p[2]
-  # Initial point
-  p0 = Vector{Float64}(undef,2)
-  initP!(p0,options,lower,upper)
-  # Fit
-  fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-  # Analyze results and return
-  R = pearson(X,Y,model,fit)
-  x, y, ypred = finexy(X,length(X),model,fit)
-  return Linear(fit.param...,R,x,y,ypred,fit.resid)
-
+  if b == nothing
+    # Set model
+    @. model(x,p) = p[1]*x + p[2]
+    # Initial point
+    p0 = Vector{Float64}(undef,2)
+    initP!(p0,options,lower,upper)
+    # Fit
+    fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
+    # Analyze results and return
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,length(X),model,fit)
+    return Linear(fit.param...,R,x,y,ypred,fit.resid)
+  else
+    lower = [lower[1]]; upper = [upper[1]];
+    # Set model
+    @. model_const(x,p) = p[1]*x + b 
+    # Initial point
+    p0 = Vector{Float64}(undef,1)
+    initP!(p0,options,lower,upper)
+    # Fit
+    fit = curve_fit(model_const, X, Y, p0, lower=lower, upper=upper)
+    # Analyze results and return
+    R = pearson(X,Y,model_const,fit)
+    x, y, ypred = finexy(X,length(X),model_const,fit)
+    return Linear(fit.param...,b,R,x,y,ypred,fit.resid)
+  end
 end
-@FitMethods(fitlinear)
 
 function Base.show( io :: IO, fit :: Linear )
   println("")

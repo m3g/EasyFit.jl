@@ -64,7 +64,7 @@ function fitquadratic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   # Set model
   @. model(x,p) = p[1]*x^2 + p[2]*x + p[3]
   # Fit
-  fit = find_best_fit(model, X, Y, 3, options, lower, upper)
+  fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
   # Analyze results and return
   R = pearson(X,Y,model,fit)
   x, y, ypred = finexy(X,options.fine,model,fit) 

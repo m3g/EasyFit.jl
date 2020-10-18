@@ -18,18 +18,22 @@ function find_best_fit(model, X, Y, np, options, lower, upper)
         nbest = nbest + 1
         if sum_residues < best
           best = sum_residues
-          best_fit = fit
+          best_fit = deepcopy(fit)
         end
       elseif sum_residues < best
         nbest = 1
         best = sum_residues
-        best_fit = fit
+        best_fit = deepcopy(fit)
       end
     catch msg
       if options.debug
         error("ERROR: $msg \n $fit")
       end
     end
+  end
+  if nbest == 0
+    error(" Could not obtain any successful fit, probably the data is not well posed.\n
+            Further information can be obtained by adding Option(debug=true) to the input.")
   end
   return best_fit
 end

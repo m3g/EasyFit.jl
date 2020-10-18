@@ -5,7 +5,7 @@
 function setbounds(vars,l,u) 
   # Throw error if the user set a bound to a variable which is not in list for this function
   for field in fieldnames(typeof(l))
-    if getfield(l,field) != nothing 
+    if (getfield(l,field) != nothing) || (getfield(u,field) !=nothing)
       found = false
       for var in vars
         if field == var.field
@@ -29,6 +29,13 @@ function setbounds(vars,l,u)
     lower[idim:idim+var.dim-1] = check_lower_bound_input(var,getfield(l,var.field))
     upper[idim:idim+var.dim-1] = check_upper_bound_input(var,getfield(u,var.field))
     idim += var.dim
+  end
+  i = 0
+  for var in vars
+    i += 1
+    if lower[i] > upper[i]
+      error(" Error in bounds. Lower bound of '$(var.field)' greater than upper bound. ")
+    end
   end
   return lower, upper
 end

@@ -64,7 +64,7 @@ function fitlinear(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   p0 = Vector{Float64}(undef,2)
   initP!(p0,options,lower,upper)
   # Fit
-  fit = curve_fit(model, X, Y, p0, lower, upper)
+  fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
   # Analyze results and return
   R = pearson(X,Y,model,fit)
   x, y, ypred = finexy(X,length(X),model,fit)

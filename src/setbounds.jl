@@ -10,6 +10,9 @@ function setbounds(vars,l,u)
       for var in vars
         if field == var.field
           found = true
+          if var.type == Nothing
+            error(" Bounds to intercept $(var.field) are not supported. For a constant use $(var.field) = const.")
+          end
         end
       end
       if ! found

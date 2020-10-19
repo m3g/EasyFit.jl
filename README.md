@@ -33,11 +33,9 @@ few specificities:
 - [Exponential fit](#exp)
 - [Splines](#splines)
 - [Moving Averages](#movavg)
+- [Bounds](#bounds)
 - [Example output](#example)
-
-Additional options:
 - [Options](#options)
-
 
 <a name="linear"/>
 
@@ -246,9 +244,36 @@ julia> ma = movavg(x,y,50)
 
 Use `plot(ma.x,ma.y)` to plot the moving average.
 
+<a name="options"/>
+## Bounds
+
+Lower and upper bounds can be set to the parameters of each function using the
+`l=lower()` and `u=upper()` input parameters. For example:
+
+```julia
+julia> fit = fitlinear(x,y,l=lower(a=5.),upper(a=10.))
+
+```
+
+```julia
+julia> fit = fitexp(x,y,n=2,l=lower(a=[0.,0]),upper(a=[1.,1.]))
+
+```
+
+Bounds to the intercepts or limiting values are not supported, but it is possible
+to set them to a constant value. For example:
+
+```julia
+julia> fit = fitlinear(x,y,b=5.)
+
+```
+
+```julia
+julia> fit = fitexp(x,y,n=2,c=0.)
+
+```
 
 <a name="example"/>
-
 ## Example output:
 
 This figure was obtained using `Plots`, after obtaining a fit of each type, with
@@ -265,14 +290,13 @@ The complete script is available at:
 [plots.jl](https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
 
 <a name="options"/>
-
 ## Options
 
 It is possible to pass an optional set of parameters to the functions.
 Use, for example:
 
 ```julia
-julia> fitexp(x,y,Options(maxtrials=1000))
+julia> fitexp(x,y,options=Options(maxtrials=1000))
 
 ```
 
@@ -281,8 +305,7 @@ Available options:
 | Keyword | Type | Default value | Meaning |
 |:-------:|:----:|:-------------:|:--------|
 | `fine`  | `Int`| 100           | Number of points of fit to smooth plot. |
-| `p0_range`  | `Vector{Float64,2}`  | `[-1.,1.]`  | Range of gereneration of initial random parameters. |
-|  `rand_std` | `Float64`  | 0.5  |  Size of perturbation to generate new points for globalization heuristic. |
+| `p0_range`  | `Vector{Float64,2}`  | `[-maximum(Y).,maximum(Y)]`  | Range of gereneration of initial random parameters. |
 | `nbest` | `Int`| 5  | Number of repetitions of best solution in global search. |
 | `besttol` | `Float64`| 1e-4  | Similarity of the sum of residues of two solutions such that they are considered the same. |
 | `maxtrials`  | `Int`| 100  | Maximum number of trials in global search. |

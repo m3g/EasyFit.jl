@@ -244,7 +244,8 @@ julia> ma = movavg(x,y,50)
 
 Use `plot(ma.x,ma.y)` to plot the moving average.
 
-<a name="options"/>
+<a name="bounds"/>
+
 ## Bounds
 
 Lower and upper bounds can be set to the parameters of each function using the
@@ -274,6 +275,7 @@ julia> fit = fitexp(x,y,n=2,c=0.)
 ```
 
 <a name="example"/>
+
 ## Example output:
 
 This figure was obtained using `Plots`, after obtaining a fit of each type, with
@@ -290,6 +292,7 @@ The complete script is available at:
 [plots.jl](https://raw.githubusercontent.com/m3g/EasyFit/master/docs/plots.jl)
 
 <a name="options"/>
+
 ## Options
 
 It is possible to pass an optional set of parameters to the functions.

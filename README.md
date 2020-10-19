@@ -273,7 +273,7 @@ with `norm=0`).
 
 Example:
 
-```
+```julia-repl
 julia> x = randn(1000);
 
 julia> density = fitdensity(x,step=0.5,norm=0);

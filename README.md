@@ -308,7 +308,7 @@ Available options:
 | Keyword | Type | Default value | Meaning |
 |:-------:|:----:|:-------------:|:--------|
 | `fine`  | `Int`| 100           | Number of points of fit to smooth plot. |
-| `p0_range`  | `Vector{Float64,2}`  | `[-100*maximum(Y).,100*maximum(Y)]`  | Range of gereneration of initial random parameters. |
+| `p0_range`  | `Vector{Float64,2}`  | `[-100*(maximum(Y)-minimum(Y)), 100*(maximum(Y)-minimum(Y))]`  | Range of gereneration of initial random parameters. |
 | `nbest` | `Int`| 5  | Number of repetitions of best solution in global search. |
 | `besttol` | `Float64`| 1e-4  | Similarity of the sum of residues of two solutions such that they are considered the same. |
 | `maxtrials`  | `Int`| 100  | Maximum number of trials in global search. |

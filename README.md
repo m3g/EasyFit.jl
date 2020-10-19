@@ -271,6 +271,20 @@ Options are the step size (`step=0.5`) and normalization type
 (probability by default, with `norm=1` or number of data points,
 with `norm=0`).
 
+Example:
+
+```
+julia> x = randn(1000);
+
+julia> density = fitdensity(x,step=0.5,norm=0);
+
+julia> histogram(x,xlabel="x",ylabel="Density",label="",alpha=0.3,framestyle=:box);
+
+julia> plot!(density.x,density.d,linewidth=2);
+
+```
+<img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/density.png">
+
 <a name="bounds"/>
 
 ## Bounds

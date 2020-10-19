@@ -20,7 +20,7 @@ Obtains the linear fit: ``y = a*x + b``
 Optional lower and upper bounds for a, and constant b can be provided using, for example:
 
 ```
-fitlinear(x,y, lower(a=0.), b=3)
+fitlinear(x,y, l=lower(a=0.), b=3)
 ```
 
 # Examples
@@ -93,7 +93,7 @@ function Base.show( io :: IO, fit :: Linear )
   println("       b = ", fit.b)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average absolute residue = ", sum(abs.(fit.residues))/length(fit.residues))
+  println(" Average square residue = ", mean(fit.residues.^2))
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")

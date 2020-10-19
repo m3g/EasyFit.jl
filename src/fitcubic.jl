@@ -22,10 +22,10 @@ Obtains the cubic polynomial fit: ``y = ax^3 + bx^2 + cx + d``
 Optional lower and upper bounds for a, b, and c can be provided using, for example:
 
 ```
-fitcubic(x,y, lower(b=0.), upper(a=5.,d=10.) )
+fitcubic(x,y, l=lower(b=0.), u=upper(a=5.))
 ```
 
-and `d` can be set to constant with
+and `d` can be set to constant with, for example:
 
 ```
 fitcubic(x,y,d=5.)
@@ -33,24 +33,24 @@ fitcubic(x,y,d=5.)
 
 # Examples
 ```jldoctest
-julia> x = sort(rand(10)) ; y = sort(rand(10)).^3;
+julia>  x = sort(rand(10)); y = x.^3 .+ rand(10);
 
-julia> fit = fitcubic(x,y,lower(c=5.),d=6.)
+julia> fit = fitcubic(x,y)
 
  ------------------- Cubic Fit ----------------- 
 
  Equation: y = ax^3 + bx^2 + cx + d 
 
- With: a = 4.797115186839406
-       b = -5.268081309993556
-       c = 2.0751456266896042
-       d = -0.042233689646186394
+ With: a = 12.637633791600711
+       b = -19.648194970330454
+       c = 10.018385827387148
+       d = -0.8740912356800155
 
- Pearson correlation coefficient, R = 0.9900635473581005
- Average absolute residue = 0.0352610880828611
+ Pearson correlation coefficient, R = 0.7831345513024988
+ Average square residue = 0.0781543071776559
 
- Predicted Y: ypred = [-0.03381603021235922, 0.026984191488563257...
- residues = [-0.04019053809246011, 0.018920670738045653...
+ Predicted Y: ypred = [0.24999805379642903, 0.3001612840610868...
+ residues = [0.2238223147726266, 0.12656861200050698...
 
  ----------------------------------------------- 
 
@@ -102,7 +102,7 @@ function Base.show( io :: IO, fit :: Cubic )
   println("       d = ", fit.d)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average absolute residue = ", sum(abs.(fit.residues))/length(fit.residues))
+  println(" Average square residue = ", mean(fit.residues.^2))
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")

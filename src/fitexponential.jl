@@ -3,7 +3,6 @@
 #
 
 struct SingleExponential
-  ndata :: Int64
   a :: Float64
   b :: Float64
   c :: Float64
@@ -15,7 +14,6 @@ struct SingleExponential
 end
 
 struct MultipleExponential
-  ndata :: Int64
   n :: Int64
   a :: Vector{Float64}
   b :: Vector{Float64}
@@ -86,20 +84,21 @@ julia> x = sort(rand(10)); y = rand()*exp.(sort(rand(10)));
 
 julia> fit = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
 
- -------- Multiple-exponential fit ------------- 
+ -------- Multiple-exponential fit -------------
 
- Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c 
+ Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
 
- With: a = [1009.9344681493277, -2914.9589668412737]
-       b = [42.38134160292643, 119.72656123917118]
-       c = 1905.4667823291825
+ With: a = [6.60693727987886e-13, 0.6249999999993409]
+       b = [0.02688289803014393, 0.5000000000002596]
+       c = 0.37499999999999856
 
- Pearson correlation coefficient, R = 0.9809216974618234
+ Pearson correlation coefficient, R = 1.0
+ Average square residue = 1.1639900380979497e-29
 
- Predicted Y: ypred = [0.517395999935502, 0.5234529964791363...
- residues = [0.03679332948361974, 0.03612485795368403...
+ Predicted Y: ypred = [1.0000000000000002, 0.4595845520228801...
+ residues = [2.220446049250313e-16, -2.831068712794149e-15...
 
- ----------------------------------------------- 
+ -----------------------------------------------
 
 ```
 """  
@@ -166,14 +165,13 @@ function fitexponential(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
     R = pearson(X,Y,model_const,fit)
     x, y, ypred = finexy(X,options.fine,model_const,fit) 
     if n == 1
-      return SingleExponential(length(X),fit.param[1],fit.param[2],c,
-                               R,x,y,ypred,fit.resid)
+      return SingleExponential(fit.param[1],fit.param[2],c,R,x,y,ypred,fit.resid)
     else
       ind = collect(1:n)
       sort!(ind,by=i->fit.param[n+i])
       a = fit.param[1:n][ind]
       b = fit.param[n+1:2*n][ind]
-      return MultipleExponential(length(X),n,a,b,c,R,x,y,ypred,fit.resid)
+      return MultipleExponential(n,a,b,c,R,x,y,ypred,fit.resid)
     end
   end
 end
@@ -190,7 +188,7 @@ function Base.show( io :: IO, fit :: SingleExponential )
   println("       c = ", fit.c)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average square residue = ", sum(fit.residues.^2)/fit.ndata)
+  println(" Average square residue = ", mean(fit.residues.^2))
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
@@ -209,7 +207,7 @@ function Base.show( io :: IO, fit :: MultipleExponential )
   println("       c = ", fit.c)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average square residue = ", sum(fit.residues.^2)/fit.ndata)
+  println(" Average square residue = ", mean(fit.residues.^2))
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")

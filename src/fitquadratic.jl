@@ -31,7 +31,7 @@ fitquad(x,y, c=3.)
 
 # Examples
 ```jldoctest
-julia> x = sort(rand(10)); y = rand(10).^2 .+ rand();
+julia>  x = sort(rand(10)); y = x.^2 .+ rand(10);
 
 julia> fit = fitquad(x,y)
 
@@ -39,15 +39,15 @@ julia> fit = fitquad(x,y)
 
  Equation: y = ax^2 + bx + c 
 
- With: a = 2.8685688648859653
-       b = -1.8803961490451921
-       c = 1.3269720880467206
+ With: a = 1.9829681649993036
+       b = -1.24215737650827
+       c = 0.9410816080128867
 
- Pearson correlation coefficient, R = 0.5028759798430105
- Average absolute residue = 0.2137732533148255
+ Pearson correlation coefficient, R = 0.8452759310204063
+ Average square residue = 0.039620067833833005
 
- Predicted Y: ypred = [1.18520463048216, 1.1710010208923622...
- residues = [-0.27097835626668965, 0.2550499436259156...
+ Predicted Y: ypred = [0.778952191090992, 0.7759243614999851...
+ residues = [0.0550252612868799, -0.15207394277809727...
 
  ----------------------------------------------- 
 
@@ -98,7 +98,7 @@ function Base.show( io :: IO, fit :: Quadratic )
   println("       c = ", fit.c)
   println("")
   println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average absolute residue = ", sum(abs.(fit.residues))/length(fit.residues))
+  println(" Average square residue = ", mean(fit.residues.^2))
   println("")
   println(" Predicted Y: ypred = [",fit.ypred[1],", ",fit.ypred[2],"...")
   println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")

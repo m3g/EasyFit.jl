@@ -33,6 +33,7 @@ few specificities:
 - [Exponential fit](#exp)
 - [Splines](#splines)
 - [Moving Averages](#movavg)
+- [Density function](#density)
 - [Bounds](#bounds)
 - [Example output](#example)
 - [Options](#options)
@@ -243,6 +244,32 @@ julia> ma = movavg(x,y,50)
 ```
 
 Use `plot(ma.x,ma.y)` to plot the moving average.
+
+<a name="bounds"/>
+
+<a name="density"/>
+
+## Density function
+
+Use the `fitdensity` to obtain the density function (continuous histogram)
+of a data set `x`:
+
+```julia
+
+julia> x = randn(1000)
+
+julia> density = fitdensity(x)
+
+ ------------------- Density -------------
+
+  d contains the probability of finding data points within x ± 0.25
+
+ -----------------------------------------
+
+```
+Options are the step size (`step=0.5`) and normalization type 
+(probability by default, with `norm=1` or number of data points,
+with `norm=0`).
 
 <a name="bounds"/>
 

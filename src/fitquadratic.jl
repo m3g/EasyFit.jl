@@ -61,7 +61,7 @@ function fitquadratic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   # Set bounds
   vars = [ VarType(:a,Number,1), 
            VarType(:b,Number,1),
-           VarType(:c,Number,1) ]
+           VarType(:c,Nothing,1) ]
   lower, upper = setbounds(vars,l,u)   
   if c == nothing
     # Set model

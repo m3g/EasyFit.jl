@@ -19,20 +19,23 @@ end
 
 Obtains the cubic polynomial fit: ``y = ax^3 + bx^2 + cx + d``
 
-Optional lower and upper bounds for a and b can be provided using, for example:
+Optional lower and upper bounds for a, b, and c can be provided using, for example:
 
 ```
 fitcubic(x,y, lower(b=0.), upper(a=5.,d=10.) )
-fitcubic(x,y, lower(b=0.,c=0.) )
-fitcubic(x,y, upper(b=0.) )
-fitcubic(x,y, upper(a=1.,b=0.) )
+```
+
+and `d` can be set to constant with
+
+```
+fitcubic(x,y,d=5.)
 ```
 
 # Examples
 ```jldoctest
 julia> x = sort(rand(10)) ; y = sort(rand(10)).^3;
 
-julia> fit = fitcubic(x,y,lower(d=5.),upper(d=6.))
+julia> fit = fitcubic(x,y,lower(c=5.),d=6.)
 
  ------------------- Cubic Fit ----------------- 
 
@@ -54,7 +57,7 @@ julia> fit = fitcubic(x,y,lower(d=5.),upper(d=6.))
 ```
 """   
 function fitcubic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}; 
-                  l :: lower = lower(), u :: upper = upper(),
+                  l :: lower = lower(), u :: upper = upper(), d = nothing,
                   options :: Options = Options())
   # Check data
   X, Y = checkdata(X,Y,options)
@@ -62,16 +65,29 @@ function fitcubic(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
   vars = [ VarType(:a,Number,1),
            VarType(:b,Number,1),
            VarType(:c,Number,1),
-           VarType(:d,Number,1) ]
+           VarType(:d,Nothing,1) ]
   lower, upper = setbounds(vars,l,u)
-  # Set model
-  @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
-  # Fit
-  fit = find_best_fit(model, X, Y, 4, options, lower, upper)
-  # Analyze results and return
-  R = pearson(X,Y,model,fit)
-  x, y, ypred = finexy(X,options.fine,model,fit) 
-  return Cubic(fit.param...,R,x,y,ypred,fit.resid)
+  if d == nothing
+    # Set model
+    @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
+    # Fit
+    fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
+    # Analyze results and return
+    R = pearson(X,Y,model,fit)
+    x, y, ypred = finexy(X,options.fine,model,fit) 
+    return Cubic(fit.param...,R,x,y,ypred,fit.resid)
+  else
+    lower = lower[1:length(vars)-1]
+    upper = upper[1:length(vars)-1]
+    # Set model
+    @. model_const(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + d
+    # Fit
+    fit = find_best_fit(model_const, X, Y, length(vars)-1, options, lower, upper)
+    # Analyze results and return
+    R = pearson(X,Y,model_const,fit)
+    x, y, ypred = finexy(X,options.fine,model,fit) 
+    return Cubic(fit.param...,d,R,x,y,ypred,fit.resid)
+  end
 end
 
 function Base.show( io :: IO, fit :: Cubic )

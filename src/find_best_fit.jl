@@ -32,8 +32,8 @@ function find_best_fit(model, X, Y, np, options, lower, upper)
     end
   end
   if nbest == 0
-    error(" Could not obtain any successful fit, probably the data is not well posed.\n
-            Further information can be obtained by adding Option(debug=true) to the input.")
+error(" Could not obtain any successful fit, probably the data is not well posed.
+        Further information can be obtained by adding Option(debug=true) to the input.")
   end
   return best_fit
 end

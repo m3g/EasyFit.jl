@@ -29,8 +29,10 @@ function setbounds(vars,l,u)
   upper = Vector{Float64}(undef,n)
   idim = 1
   for var in vars
-    lower[idim:idim+var.dim-1] = check_lower_bound_input(var,getfield(l,var.field))
-    upper[idim:idim+var.dim-1] = check_upper_bound_input(var,getfield(u,var.field))
+    ltmp = check_lower_bound_input(var,getfield(l,var.field))  
+    utmp = check_upper_bound_input(var,getfield(u,var.field)) 
+    @. lower[idim:idim+var.dim-1] = ltmp
+    @. upper[idim:idim+var.dim-1] = utmp
     idim += var.dim
   end
   i = 0
@@ -53,7 +55,7 @@ function check_lower_bound_input(var,value)
   if (value isa Vector) && (length(value) != var.dim)
     error("Lower bound of $(var.field) must be of dimension $(var.dim), got $(length(value))")
   end
-  return [ value ]
+  return value
 end
 
 function check_upper_bound_input(var,value) 
@@ -66,7 +68,7 @@ function check_upper_bound_input(var,value)
   if (value isa Vector) && (length(value) != var.dim)
     error("Upper bound of $(var.field) must be of dimension $(var.dim), got $(length(value))")
   end
-  return [ value ]
+  return value
 end
 
 

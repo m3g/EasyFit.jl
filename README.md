@@ -252,12 +252,12 @@ Lower and upper bounds can be set to the parameters of each function using the
 `l=lower()` and `u=upper()` input parameters. For example:
 
 ```julia
-julia> fit = fitlinear(x,y,l=lower(a=5.),upper(a=10.))
+julia> fit = fitlinear(x,y,l=lower(a=5.),u=upper(a=10.))
 
 ```
 
 ```julia
-julia> fit = fitexp(x,y,n=2,l=lower(a=[0.,0]),upper(a=[1.,1.]))
+julia> fit = fitexp(x,y,n=2,l=lower(a=[0.,0]),u=upper(a=[1.,1.]))
 
 ```
 

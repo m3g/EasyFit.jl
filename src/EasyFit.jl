@@ -22,5 +22,6 @@ module EasyFit
   include("./fitexponential.jl")
   include("./fitspline.jl")
   include("./movingaverage.jl")
+  include("./fitdensity.jl")
 
 end 

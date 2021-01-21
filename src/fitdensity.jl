@@ -15,8 +15,9 @@ fitdensity(x; step, norm)
 
 Obtains the density function given data sampled.
 
-Use `step=(Float64)` to control the bin step and `norm=(0 or 1)` to determine
-if the count of data points or the probability within ± step/2.
+Use `step=(Float64)` to control the bin step. Use `norm=(0 or 1)` to set
+if the number of data points or the probability of finding a data point
+within ± step/2 will be output.
 
 By default, `norm=1` (probability) and the step is `(xmax-xmin)/100`.
 

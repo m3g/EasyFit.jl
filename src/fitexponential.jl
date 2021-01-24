@@ -131,14 +131,14 @@ function fitexponential(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real};
     R = pearson(X,Y,model,fit)
     x, y, ypred = finexy(X,options.fine,model,fit) 
     if n == 1
-      return SingleExponential(length(X),fit.param[1],fit.param[2],fit.param[3],
+      return SingleExponential(fit.param[1],fit.param[2],fit.param[3],
                                R,x,y,ypred,fit.resid)
     else
       ind = collect(1:n)
       sort!(ind,by=i->fit.param[n+i])
       a = fit.param[1:n][ind]
       b = fit.param[n+1:2*n][ind]
-      return MultipleExponential(length(X),n,a,b,fit.param[2*n+1],
+      return MultipleExponential(n,a,b,fit.param[2*n+1],
                                  R,x,y,ypred,fit.resid)
     end
   else

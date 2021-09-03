@@ -14,7 +14,7 @@ struct Cubic
   residues :: Vector{Float64}
 end
 
-function fitcubic(X :: Vectors, Y :: Vectors, options :: Options)
+function fitcubic(X :: AbstractVector, Y :: AbstractVector, options :: Options)
   X, Y = checkdata(X,Y)
   @. model(x,p) = p[1]*x^3 + p[2]*x^2 + p[3]*x + p[4]
   fit = find_best_fit(model, X, Y, 4, options)
@@ -22,7 +22,7 @@ function fitcubic(X :: Vectors, Y :: Vectors, options :: Options)
   x, y, ypred = finexy(X,options.fine,model,fit) 
   return Cubic(fit.param...,R,x,y,ypred,fit.resid)
 end
-fitcubic(X :: Vectors, Y :: Vectors) = fitcubic(X,Y,Options())
+fitcubic(X :: AbstractVector, Y :: AbstractVector) = fitcubic(X,Y,Options())
 
 function Base.show( io :: IO, fit :: Cubic )
   println("")

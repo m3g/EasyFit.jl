@@ -13,7 +13,7 @@ struct Quadratic
   residues :: Vector{Float64}
 end
 
-function fitquadratic(X :: Vectors, Y :: Vectors, options :: Options)
+function fitquadratic(X :: AbstractVector, Y :: AbstractVector, options :: Options)
   X, Y = checkdata(X,Y)
   @. model(x,p) = p[1]*x^2 + p[2]*x + p[3]
   fit = find_best_fit(model, X, Y, 3, options)
@@ -21,9 +21,9 @@ function fitquadratic(X :: Vectors, Y :: Vectors, options :: Options)
   x, y, ypred = finexy(X,options.fine,model,fit) 
   return Quadratic(fit.param...,R,x,y,ypred,fit.resid)
 end
-fitquadratic(X :: Vectors, Y :: Vectors) = fitquadratic(X,Y,Options())
-fitquad(X :: Vectors, Y :: Vectors) = fitquadratic(X,Y,Options())
-fitquad(X :: Vectors, Y :: Vectors, options :: Options) = fitquadratic(X,Y,options)
+fitquadratic(X :: AbstractVector, Y :: AbstractVector) = fitquadratic(X,Y,Options())
+fitquad(X :: AbstractVector, Y :: AbstractVector) = fitquadratic(X,Y,Options())
+fitquad(X :: AbstractVector, Y :: AbstractVector, options :: Options) = fitquadratic(X,Y,options)
 
 function Base.show( io :: IO, fit :: Quadratic )
   println("")

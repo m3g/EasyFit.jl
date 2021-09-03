@@ -7,7 +7,7 @@ struct Spline
   y :: Vector{Float64}
 end
 
-function fitspline(X :: Vectors, Y :: Vectors, options :: Options)
+function fitspline(X :: AbstractVector, Y :: AbstractVector, options :: Options)
   X, Y = checkdata(X,Y)
   t = 1:length(X)
   A = hcat(X,Y)
@@ -17,7 +17,7 @@ function fitspline(X :: Vectors, Y :: Vectors, options :: Options)
   x, y = [itp(t,1) for t in tfine], [itp(t,2) for t in tfine]
   return Spline(x,y)
 end
-fitspline(X :: Vectors, Y :: Vectors) = fitspline(X,Y,Options())
+fitspline(X :: AbstractVector, Y :: AbstractVector) = fitspline(X,Y,Options())
 
 function Base.show( io :: IO, fit :: Spline )
   println("")

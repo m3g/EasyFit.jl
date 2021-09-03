@@ -25,7 +25,7 @@ struct MultipleExponential
   residues :: Vector{Float64}
 end
 
-function sum_of_exps(x :: Numbers, p :: Vector{Float64})
+function sum_of_exps(x :: Numbers, p :: AbstractVector)
   n = round(Int64,(length(p)-1)/2)
   f = p[length(p)] 
   for i in 1:n
@@ -34,7 +34,7 @@ function sum_of_exps(x :: Numbers, p :: Vector{Float64})
   return f
 end
 
-function exp_model(X :: Vectors, p :: Vector{Float64}) 
+function exp_model(X :: AbstractVector, p :: AbstractVector) 
   f = Vector{Float64}(undef,length(X))  
   for i in 1:length(X)
     f[i] = sum_of_exps(X[i],p)
@@ -42,7 +42,7 @@ function exp_model(X :: Vectors, p :: Vector{Float64})
   return f
 end
 
-function fitexponential(X :: Vectors, Y :: Vectors, options :: Options; n :: Int = 1)
+function fitexponential(X :: AbstractVector, Y :: AbstractVector, options :: Options; n :: Int = 1)
   X, Y = checkdata(X,Y)
   model(x,p) = exp_model(x,p)
   fit = find_best_fit(model,X,Y,2*n+1,options)
@@ -60,9 +60,9 @@ function fitexponential(X :: Vectors, Y :: Vectors, options :: Options; n :: Int
                                R,x,y,ypred,fit.resid)
   end
 end
-fitexponential(X :: Vectors, Y :: Vectors; n :: Int = 1) = fitexponential(X,Y,Options(),n=n)
-fitexp(X :: Vectors, Y :: Vectors; n :: Int = 1) = fitexponential(X,Y,Options(),n=n)
-fitexp(X :: Vectors, Y :: Vectors, options :: Options; n :: Int = 1) = fitexponential(X,Y,options,n=n)
+fitexponential(X :: AbstractVector, Y :: AbstractVector; n :: Int = 1) = fitexponential(X,Y,Options(),n=n)
+fitexp(X :: AbstractVector, Y :: AbstractVector; n :: Int = 1) = fitexponential(X,Y,Options(),n=n)
+fitexp(X :: AbstractVector, Y :: AbstractVector, options :: Options; n :: Int = 1) = fitexponential(X,Y,options,n=n)
 
 function Base.show( io :: IO, fit :: SingleExponential )
   println("")

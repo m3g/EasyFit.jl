@@ -25,7 +25,7 @@ struct MultipleExponential
   residues :: Vector{Float64}
 end
 
-function sum_of_exps(x :: Real, p :: Vector{Float64})
+function sum_of_exps(x :: Real, p :: AbstractVector)
   n = div(length(p)-1,2)
   f = p[length(p)] 
   for i in 1:n
@@ -34,7 +34,7 @@ function sum_of_exps(x :: Real, p :: Vector{Float64})
   return f
 end
 
-function exp_model(X :: AbstractArray{<:Real}, p :: Vector{Float64}) 
+function exp_model(X :: AbstractVector, p :: AbstractVector) 
   f = Vector{Float64}(undef,length(X))  
   for i in 1:length(X)
     f[i] = sum_of_exps(X[i],p)
@@ -42,7 +42,7 @@ function exp_model(X :: AbstractArray{<:Real}, p :: Vector{Float64})
   return f
 end
 
-function sum_of_exps_const(x :: Real, p :: Vector{Float64},c)
+function sum_of_exps_const(x :: Real, p :: AbstractVector, c)
   n = div(length(p),2)
   f = c
   for i in 1:n
@@ -51,7 +51,7 @@ function sum_of_exps_const(x :: Real, p :: Vector{Float64},c)
   return f
 end
 
-function exp_model_const(X :: AbstractArray{<:Real}, p :: Vector{Float64},c) 
+function exp_model_const(X :: AbstractArray{<:Real}, p :: AbstractVector, c) 
   f = Vector{Float64}(undef,length(X))  
   for i in 1:length(X)
     f[i] = sum_of_exps_const(X[i],p,c)

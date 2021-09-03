@@ -61,7 +61,7 @@ function movingaverage( X :: AbstractArray{<:Real}, n :: Int )
   R = Statistics.cor(x,X)
   return MovingAverage(n,x,R,residues)
 end
-movingaverage(X::AbstractArray{<:Real};n=Int=0) = movingaverage(X,n)
+movingaverage(X::AbstractArray{<:Real};n::Int=0) = movingaverage(X,n)
 movavg = movingaverage
 
 function Base.show( io :: IO, fit :: MovingAverage )

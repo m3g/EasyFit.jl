@@ -27,9 +27,6 @@ julia> using EasyFit
 Read the `Linear fit` section first, because all the others are similar, with
 few specificities:
 
-- [EasyFit](#easyfit)
-  - [Installation](#installation)
-  - [Contents](#contents)
   - [Linear fit](#linear-fit)
   - [Quadratic fit](#quadratic-fit)
   - [Cubic fit](#cubic-fit)

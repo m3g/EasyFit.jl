@@ -227,7 +227,7 @@ Use the `movavg` (or `movingaverage`) function:
 
 ```julia
 
-julia> ma = movavg(x,y,50)
+julia> ma = movavg(x,50)
 
  ------------------- Moving Average ----------
 

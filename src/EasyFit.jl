@@ -19,6 +19,7 @@ include("./FitMethods.jl")
 include("./fitlinear.jl")
 include("./fitquadratic.jl")
 include("./fitcubic.jl")
+include("./fitpolynomial.jl")
 include("./fitexponential.jl")
 include("./fitspline.jl")
 include("./movingaverage.jl")
@@ -28,6 +29,7 @@ const model_catalogue = Dict(
   :linear => fitlinear,
   :quadratic => fitquadratic,
   :cubic => fitcubic,
+  :polynomial => fitpolynomial,
   :exponential => fitexponential,
   :spline => fitspline,
   :movingaverage => movingaverage,

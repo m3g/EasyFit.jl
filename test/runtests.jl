@@ -2,6 +2,7 @@ import CompatHelperLocal as CHL
 CHL.@check()
 using EasyFit
 using Random
+using Statistics
 using Test
 
 Random.seed!(0)
@@ -12,40 +13,20 @@ if is_logging(stderr)
     global_logger(NullLogger())
 end
 
-include("utils.jl")
+@testset "EasyFit.jl" begin
 
-# Load synthetic data, models, generators
-synthetic = _load_synthetic()
-generators = generator_catalog
+    x = sort(rand(10))
+    y = rand(10)
 
-@testset "CounterfactualExplanations.jl" begin
-
-    @testset "Data" begin
-        include("data.jl")
-    end
-
-    @testset "Data preprocessing" begin
-        include("data_preprocessing.jl")
-    end
-
-    @testset "Generative Models" begin
-        include("generative_models.jl")
-    end
-
-    @testset "Counterfactuals" begin
-        include("counterfactuals.jl")
-    end
-
-    @testset "Generators" begin
-        include("generators.jl")
-    end
-
-    @testset "Model" begin
-        include("models.jl")
-    end
-
-    @testset "Plotting" begin
-        include("plotting.jl")
+    for (model, fun) in model_catalogue
+        f = fun(x, y)
+        @testset "Estimates" begin
+            @test all(y - f.ypred .== f.residues)
+            ss_res = sum(f.residues.^2)
+            ss_tot = sum((y .- mean(y)).^2)
+            @test isapprox(f.R^2, 1 - (ss_res/ss_tot), atol=1e-5)
+            @test all(f.ypred == f.(x))
+        end
     end
 
 end

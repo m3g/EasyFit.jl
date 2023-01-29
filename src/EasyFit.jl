@@ -29,11 +29,9 @@ const model_catalogue = Dict(
   :linear => fitlinear,
   :quadratic => fitquadratic,
   :cubic => fitcubic,
-  :polynomial => fitpolynomial,
   :exponential => fitexponential,
-  :spline => fitspline,
-  :movingaverage => movingaverage,
-  :density => fitdensity,
 )
+
+export model_catalogue
 
 end 

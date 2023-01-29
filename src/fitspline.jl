@@ -43,6 +43,10 @@ function fitspline(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}, optio
 end
 fitspline(X :: AbstractArray{<:Real}, Y :: AbstractArray{<:Real}) = fitspline(X,Y,Options())
 
+function (fit::Spline)(x::Real)
+  throw(NotImplementedError())
+end
+
 function Base.show( io :: IO, fit :: Spline )
   println("")
   println(" -------- Spline fit --------------------------- ")

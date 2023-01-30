@@ -67,7 +67,7 @@ function fitcubic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
              VarType(:c, Number, 1),
              VarType(:d, Nothing, 1) ]
     lower, upper = setbounds(vars, l, u)
-    if inothing(d)
+    if isnothing(d)
         # Set model
         @. model(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + p[4]
         # Fit

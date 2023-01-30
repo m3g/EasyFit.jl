@@ -3,7 +3,7 @@
 #
 function finexy(X, fine, model, fit)
     Xmin, Xmax = extrema(X)
-    x = collect(range(start=Xmin, stop=Xmax, length=fine))
+    x = collect(range(Xmin, Xmax, length=fine))
     y = model(x, fit.param)
     ypred = model(X, fit.param)
     return x, y, ypred

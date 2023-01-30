@@ -33,10 +33,15 @@ julia> d = fitdensity(x)
 
 ```
 """
-function fitdensity(v; nbins=nothing,
-    step=nothing, steptype="absolute",
-    vmin=nothing, vmax=nothing,
-    norm::Int64=1)
+function fitdensity(
+    v::AbstractVector{T};
+    nbins=nothing,
+    step=nothing,
+    steptype="absolute",
+    vmin=nothing,
+    vmax=nothing,
+    norm::Int64=1
+) where {T<:Real}
 
     ndata = length(v)
     isnothing(vmin) && (vmin = minimum(v))
@@ -53,8 +58,8 @@ function fitdensity(v; nbins=nothing,
         end
     end
 
-    x = Vector{Float64}(undef, nbins)
-    df = Vector{Float64}(undef, nbins)
+    x = Vector{T}(undef, nbins)
+    df = Vector{T}(undef, nbins)
 
     binstep = (vmax - vmin) / nbins
     for i in 1:nbins
@@ -84,14 +89,24 @@ function Base.show(io::IO, d::Density)
     if d.norm == 1
         s = "probability of finding"
     end
-    println(
-        io,
+    println(io,
         """
-------------------- Density -------------
+        ------------------- Density -------------
 
- d contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
+         d contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
 
------------------------------------------ 
-"""
+        -----------------------------------------"""
     )
+end
+
+@testitem "fitdensity" begin
+    using Statistics: std
+
+    x = randn(100)
+    fit = fitdensity(x)
+    @test eltype(fit.d) == Float64
+
+    x = Float32.(x)
+    fit = fitdensity(x)
+    @test eltype(fit.d) == Float32
 end

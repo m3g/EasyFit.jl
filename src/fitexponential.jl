@@ -34,8 +34,8 @@ function sum_of_exps(x::Real, p::AbstractVector)
     return f
 end
 
-function exp_model(X::AbstractVector, p::AbstractVector)
-    f = Vector{Float64}(undef, length(X))
+function exp_model(X::AbstractVector{T}, p::AbstractVector{T}) where {T}
+    f = Vector{T}(undef, length(X))
     for i in eachindex(X)
         f[i] = sum_of_exps(X[i], p)
     end
@@ -51,8 +51,8 @@ function sum_of_exps_const(x::Real, p::AbstractVector, c)
     return f
 end
 
-function exp_model_const(X::AbstractArray{<:Real}, p::AbstractVector, c)
-    f = Vector{Float64}(undef, length(X))
+function exp_model_const(X::AbstractArray{T}, p::AbstractVector{T}, c) where {T<:Real}
+    f = Vector{T}(undef, length(X))
     for i in eachindex(X)
         f[i] = sum_of_exps_const(X[i], p, c)
     end
@@ -60,9 +60,9 @@ function exp_model_const(X::AbstractArray{<:Real}, p::AbstractVector, c)
 end
 
 """
-  fitexponential(x,y;n :: Int = 1)
-  fitexp(x,y;n :: Int = 1)
-
+    fitexponential(x,y; n::Int=1)
+    fitexp(x,y; n::Int=1)
+  
 Obtains single or multiexponential fits: ``y = a*exp(-x/b) + c`` or  ``y = sum(a[i]*exp(-x/b[i]) for i in 1:N) + c``
 
 Lower and upper bounds can be optionall set, and the intercept `c` can set to be constant:
@@ -103,10 +103,10 @@ julia> fit = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
 
 ```
 """
-function fitexponential(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
-    n::Int=1, c=nothing,
-    l::lower=lower(), u::upper=upper(),
-    options::Options=Options())
+function fitexponential(
+    X::AbstractArray{T}, Y::AbstractArray{T};
+    n::Int=1, c=nothing, l::lower=lower(), u::upper=upper(), options::Options=Options()
+) where {T<:Real}
 
     # Check data
     X, Y = checkdata(X, Y, options)
@@ -117,10 +117,10 @@ function fitexponential(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
         # Set bounds
         if n == 1
             vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u)
+            lower, upper = setbounds(vars, l, u, T)
         else
             vars = [VarType(:a, Vector, n), VarType(:b, Vector, n), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u)
+            lower, upper = setbounds(vars, l, u, T)
         end
         # Fit
         fit = find_best_fit(model, X, Y, 2 * n + 1, options, lower, upper)
@@ -145,10 +145,10 @@ function fitexponential(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
         # Set bounds
         if n == 1
             vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u)
+            lower, upper = setbounds(vars, l, u, T)
         else
             vars = [VarType(:a, Vector, n), VarType(:b, Vector, n), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u)
+            lower, upper = setbounds(vars, l, u, T)
         end
         lower = lower[1:2*n]
         upper = upper[1:2*n]
@@ -269,43 +269,45 @@ function (fit::MultipleExponential)(x::Real)
 end
 
 function Base.show(io::IO, fit::SingleExponential)
-    println(io,"""
-    ------------ Single Exponential fit ----------- ")
+    println(io,
+        """
+        ------------ Single Exponential fit ----------- "
+        
+        Equation: y = a exp(-x/b) + c
+        
+        With: a = $(fit.a)
+              b = $(fit.b)
+              c = $(fit.c)
+        
+        Pearson correlation coefficient, R = $(fit.R)
+        Average square residue = $(mean(fit.residues .^ 2))
 
-    Equation: y = a exp(-x/b) + c")
-
-    With: a = $(fit.a)
-          b = $(fit.b)
-          c = $(fit.c)
-
-    Pearson correlation coefficient, R = $(fit.R)
-    Average square residue = $(mean(fit.residues .^ 2))
+        Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
+        residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
+        
+        -----------------------------------------------"""
     )
-    Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
-    residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
-
-    -----------------------------------------------
-    """)
 end
 
 function Base.show(io::IO, fit::MultipleExponential)
-    println(io,"""
-    -------- Multiple-exponential fit -------------
+    println(io,
+        """
+        -------- Multiple-exponential fit -------------
 
-    Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:$(fit.n)) + c
+        Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:$(fit.n)) + c
 
-    With: a = $(fit.a)
-          b = $(fit.b)
-          c = $(fit.c)
+        With: a = $(fit.a)
+              b = $(fit.b)
+              c = $(fit.c)
 
-    Pearson correlation coefficient, R = $(fit.R)
-    Average square residue = $(mean(fit.residues .^ 2))
+        Pearson correlation coefficient, R = $(fit.R)
+        Average square residue = $(mean(fit.residues .^ 2))
 
-    Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
-    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+        Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
+        residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
 
-    -----------------------------------------------
-    """)
+        -----------------------------------------------"""
+    )
 end
 
 export fitexp, fitexponential
@@ -313,9 +315,9 @@ export fitexp, fitexponential
 @testitem "fitexponential" begin
     using Statistics: mean
     x = sort(rand(10))
-    y = @. 3*exp(-x/2) + 1
+    y = @. 3 * exp(-x / 2) + 1
     f = fitexp(x, y)
-    @test f.R > 0.9 
+    @test f.R > 0.9
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
@@ -323,10 +325,18 @@ export fitexp, fitexponential
     @test all(f.ypred ≈ f.(x))
 
     f = fitexp(x, y; n=2)
-    @test f.R > 0.9 
+    @test f.R > 0.9
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred ≈ f.(x))
+
+    x = Float32.(x)
+    y = Float32.(y)
+    f = fitexp(x, y)
+    @test typeof(f.R) == Float32
+
+    f = fitexp(x, y; n=2)
+    @test typeof(f.R) == Float32
 end

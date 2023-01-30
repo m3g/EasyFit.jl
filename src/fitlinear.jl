@@ -46,15 +46,16 @@ residues = [0.1613987313816987, 0.22309410865095275...
 
 ```
 """
-function fitlinear(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
+function fitlinear(
+    X::AbstractArray{T}, Y::AbstractArray{T};
     l::lower=lower(), u::upper=upper(), b=nothing,
-    options::Options=Options())
+    options::Options=Options()
+) where {T<:Real}
     # Check data
     X, Y = checkdata(X, Y, options)
-    T = promote_type(eltype(X), eltype(Y), Float32)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u)
+    lower, upper = setbounds(vars, l, u, T)
     if isnothing(b)
         # Set model
         @. model(x, p) = p[1] * x + p[2]
@@ -133,21 +134,23 @@ function (fit::Linear)(x::Real)
 end
 
 function Base.show(io::IO, fit::Linear)
-    println(io, """
-    ------------------- Linear Fit -------------
-    
-    Equation: y = ax + b
-    
-    With: a = $(fit.a)
-        b = $(fit.b)
-    
-    Pearson correlation coefficient, R = $(fit.R)
-    Average square residue = $(mean(fit.residues .^ 2))
-    
-    Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
-    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
-    
-    --------------------------------------------""")
+    println(io,
+        """
+        ------------------- Linear Fit -------------
+
+        Equation: y = ax + b
+
+        With: a = $(fit.a)
+              b = $(fit.b)
+
+        Pearson correlation coefficient, R = $(fit.R)
+        Average square residue = $(mean(fit.residues .^ 2))
+
+        Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
+        residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+
+        --------------------------------------------"""
+    )
 end
 
 export fitlinear
@@ -163,4 +166,9 @@ export fitlinear
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+
+    x = Float32.(x)
+    y = Float32.(y)
+    f = fitlinear(x, y)
+    @test typeof(f.R) == Float32
 end

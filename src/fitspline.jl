@@ -47,15 +47,31 @@ function (fit::Spline)(x::Real)
 end
 
 function Base.show(io::IO, fit::Spline)
-    println(io,"""
-    -------- Spline fit ---------------------------
+    println(io,
+        """
+        -------- Spline fit ---------------------------
 
-    x spline: x = [$(fit.x[1]), $(fit.x[2]), ...]
-    y spline: y = [$(fit.y[1]), $(fit.y[2]), ...]
+        x spline: x = [$(fit.x[1]), $(fit.x[2]), ...]
+        y spline: y = [$(fit.y[1]), $(fit.y[2]), ...]
 
-    -----------------------------------------------
-    """)
+        -----------------------------------------------"""
+    )
 end
 
 export fitspline
+
+@testitem "spline" begin
+
+    x = rand(10)
+    y = rand(10)
+    fit = fitspline(x,y)
+    @test eltype(fit.x) == Float64
+
+    # Splines do not propagate types correctly
+    #x = Float32.(x)
+    #y = Float32.(y)
+    #fit = fitspline(x,y)
+    #@test eltype(fit.x) = Float32
+
+end
 

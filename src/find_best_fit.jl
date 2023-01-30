@@ -34,7 +34,7 @@ function find_best_fit(model, X, Y, np, options, lower, upper)
     if nbest == 0
         error("""
         Could not obtain any successful fit, probably the data is not well posed.
-        Further information can be obtained by adding `options=Options(debug=true)` to the input.
+        Further information can be obtained by adding `options=Options(debug=true)` as kwarg.
         """)
     end
     return best_fit

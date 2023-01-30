@@ -1,21 +1,7 @@
 #
 # Function to set bounds with optional user input 
 #
-function setbounds(vars, l, u)
-    # Get largest type
-    # LsqFit.curve_fit does not appear to support Float32, so trying to propagate
-    # another type is useless 
-    T = Float64 
-    for field in fieldnames(typeof(l))
-        value = getfield(l, field)
-        if !isnothing(value)
-            T = promote_type(T, typeof(value))
-        end
-        value = getfield(u, field)
-        if !isnothing(value)
-            T = promote_type(T, typeof(value))
-        end
-    end
+function setbounds(vars, l, u, T)
     # Throw error if the user set a bound to a variable which is not in list for this function
     for field in fieldnames(typeof(l))
         if !isnothing(getfield(l, field)) || !isnothing(getfield(u, field))

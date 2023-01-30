@@ -1,7 +1,6 @@
 #
 # Cubic fit
 #
-
 struct Cubic{T} <: Fit{T}
     a::T
     b::T
@@ -56,17 +55,18 @@ julia> fit = fitcubic(x,y)
 
 ```
 """
-function fitcubic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
-    l::lower=lower(), u::upper=upper(), d=nothing,
-    options::Options=Options())
+function fitcubic(
+    X::AbstractArray{T}, Y::AbstractArray{T};
+    l::lower=lower(), u::upper=upper(), d=nothing, options::Options=Options()
+) where {T<:Real}
     # Check data
     X, Y = checkdata(X, Y, options)
     # Set bounds
-    vars = [ VarType(:a, Number, 1),
-             VarType(:b, Number, 1),
-             VarType(:c, Number, 1),
-             VarType(:d, Nothing, 1) ]
-    lower, upper = setbounds(vars, l, u)
+    vars = [VarType(:a, Number, 1),
+        VarType(:b, Number, 1),
+        VarType(:c, Number, 1),
+        VarType(:d, Nothing, 1)]
+    lower, upper = setbounds(vars, l, u, T)
     if isnothing(d)
         # Set model
         @. model(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + p[4]
@@ -141,24 +141,25 @@ function (fit::EasyFit.Cubic)(x::Real)
 end
 
 function Base.show(io::IO, fit::Cubic)
-    println(io,"""
-     ------------------- Cubic Fit -----------------
+    println(io,
+        """
+        ------------------- Cubic Fit -----------------
 
-     Equation: y = ax^3 + bx^2 + cx + d
+        Equation: y = ax^3 + bx^2 + cx + d
 
-     With: a = $(fit.a)
-           b = $(fit.b)
-           c = $(fit.c)
-           d = $(fit.d)
+        With: a = $(fit.a)
+              b = $(fit.b)
+              c = $(fit.c)
+              d = $(fit.d)
 
-     Pearson correlation coefficient, R = $(fit.R))
-     Average square residue = $(mean(fit.residues .^ 2))
+        Pearson correlation coefficient, R = $(fit.R))
+        Average square residue = $(mean(fit.residues .^ 2))
 
-     Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
-     residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
+        Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
+        residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
 
-     -----------------------------------------------
-     """)
+        -----------------------------------------------"""
+    )
 end
 
 export fitcubic
@@ -166,7 +167,7 @@ export fitcubic
 @testitem "fitcubic" begin
     using Statistics: mean
     x = sort(rand(10))
-    y = @. 4*x^3 + 3*x^2 + 2*x + 1
+    y = @. 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitcubic(x, y)
     @test f.R ≈ 1
     @test all(f.ypred - y .== f.residues)
@@ -174,4 +175,9 @@ export fitcubic
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+
+    x = Float32.(x)
+    y = Float32.(y)
+    f = fitcubic(x, y)
+    @test typeof(f.R) == Float32
 end

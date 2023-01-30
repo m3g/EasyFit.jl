@@ -8,7 +8,7 @@ function check_size(X, c)
     return vec(copy(X))
 end
 
-function checkdata(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real}, options::Options)
+function checkdata(X::AbstractArray{T}, Y::AbstractArray{T}, options::Options) where {T<:Real}
     if length(X) != length(Y)
         throw(ArgumentError("Input x and y vectors must have the same length."))
     end

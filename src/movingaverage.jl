@@ -35,20 +35,20 @@ julia> movingaverage(x,3)
 ```
 
 """
-function movingaverage(X::AbstractArray{<:Real}, n::Int)
+function movingaverage(X::AbstractArray{T}, n::Int) where {T<:Real}
     if n == 0
         error(" Please set n with movavg(x,n=10), for example. ")
     end
     if !isodd(n)
         n = n + 1
     end
-    delta = round(Int64, (n - 1) / 2)
+    delta = div(n - 1, 2)
     nX = length(X)
     x = similar(X)
     for i in 1:nX
         jmin = max(i - delta, 1)
         jmax = min(i + delta, nX)
-        x[i] = 0.0
+        x[i] = zero(T)
         for j in jmin:jmax
             x[i] = x[i] + X[j]
         end
@@ -65,19 +65,29 @@ movingaverage(X::AbstractArray{<:Real}; n::Int=0) = movingaverage(X, n)
 const movavg = movingaverage
 
 function Base.show(io::IO, fit::MovingAverage)
-    println(io,"""
-    ------------------- Moving Average ----------
+    println(io,
+        """
+        ------------------- Moving Average ----------
 
-    Number of points averaged: $(fit.n) (± $(round(Int64,(fit.n-1)/2)) points.
+        Number of points averaged: $(fit.n) (± $(round(Int,(fit.n-1)/2)) points.
 
-    Pearson correlation coefficient, R = $(fit.R)
+        Pearson correlation coefficient, R = $(fit.R)
 
-    Averaged X: x = [$(fit.x[1]), $(fit.x[2]), ...]
-    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+        Averaged X: x = [$(fit.x[1]), $(fit.x[2]), ...]
+        residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
 
-    --------------------------------------------
-    """)
+        --------------------------------------------"""
+    )
 end
 
 export movingaverage, movavg
+
+@testitem "moving average" begin
+    x = rand(100)
+    fit = movingaverage(x,n=10)
+    @test eltype(fit.x) == Float64
+    x = Float32.(x)
+    fit = movingaverage(x,n=10)
+    @test eltype(fit.x) == Float32
+end
 

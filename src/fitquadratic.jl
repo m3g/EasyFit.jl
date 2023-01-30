@@ -54,14 +54,16 @@ julia> fit = fitquad(x,y)
 
 ```
 """
-function fitquadratic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
+function fitquadratic(
+    X::AbstractArray{T}, Y::AbstractArray{T};
     l::lower=lower(), u::upper=upper(), c=nothing,
-    options::Options=Options())
+    options::Options=Options()
+) where {T<:Real}
     # Check data
     X, Y = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u)
+    lower, upper = setbounds(vars, l, u, T)
     if isnothing(c)
         # Set model
         @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]
@@ -84,7 +86,7 @@ function fitquadratic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
         return Quadratic(fit.param..., c, R, x, y, ypred, fit.resid)
     end
 end
-fitquad = fitquadratic
+const fitquad = fitquadratic
 
 """
     (fit::Quadratic)(x::Real)
@@ -152,8 +154,7 @@ function Base.show(io::IO, fit::Quadratic)
    Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
 
-   -----------------------------------------------
-   """)
+   -----------------------------------------------""")
 end
 
 export fitquad, fitquadratic
@@ -169,4 +170,9 @@ export fitquad, fitquadratic
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+
+    x = Float32.(x)
+    y = Float32.(y)
+    f = fitquadratic(x, y)
+    @test typeof(f.R) == Float32
 end

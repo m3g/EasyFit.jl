@@ -1,17 +1,15 @@
 #
 # Computes the density function of a list of values
 #
-struct Density
-  x :: Vector{Float64}
-  d :: Vector{Float64}
-  step :: Float64
-  norm :: Int64
+struct Density{T} <: Fit{T}
+    x::Vector{T}
+    d::Vector{T}
+    step::T
+    norm::Int
 end
 
 """
-```
-fitdensity(x; step, norm)
-```
+    fitdensity(x; step, norm)
 
 Obtains the density function given data sampled.
 
@@ -35,68 +33,65 @@ julia> d = fitdensity(x)
 
 ```
 """
-function fitdensity(v;nbins=nothing,
-                      step=nothing, steptype="absolute",
-                      vmin=nothing, vmax=nothing,
-                      norm :: Int64 = 1)
+function fitdensity(v; nbins=nothing,
+    step=nothing, steptype="absolute",
+    vmin=nothing, vmax=nothing,
+    norm::Int64=1)
 
-  ndata = length(v)
-
-  if vmin == nothing
-    vmin = minimum(v)
-  end
-  if vmax == nothing
-    vmax = maximum(v)
-  end
-  if nbins == nothing
-    nbins = 100
-  end
-  if step == nothing
-    step = (vmax - vmin)/nbins
-  else
-    # By default, the step size is absolute
-    if steptype == "relative"
-      step = step*(vmax-vmin)/nbins
-    elseif steptype != "absolute"
-      error(" steptype must be \"relative\" or \"absolute\"")
+    ndata = length(v)
+    isnothing(vmin) && (vmin = minimum(v))
+    isnothing(vmax) && (vmax = maximum(v))
+    isnothing(nbins) && (nbins = 100)
+    if isnothing(step)
+        step = (vmax - vmin) / nbins
+    else
+        # By default, the step size is absolute
+        if steptype == "relative"
+            step = step * (vmax - vmin) / nbins
+        elseif steptype != "absolute"
+            throw(ArgumentError(" steptype must be \"relative\" or \"absolute\""))
+        end
     end
-  end
 
-  x = Vector{Float64}(undef,nbins)
-  df = Vector{Float64}(undef,nbins)
+    x = Vector{Float64}(undef, nbins)
+    df = Vector{Float64}(undef, nbins)
 
-  binstep = (vmax - vmin)/nbins
-  for i in 1:nbins
-    x[i] = vmin + (i-1)*binstep + binstep/2
-    nv = 0
-    for j in 1:ndata
-      if ( v[j] > x[i] - step/2 ) && ( v[j] <= x[i] + step/2 )
-        nv = nv + 1
-      end
+    binstep = (vmax - vmin) / nbins
+    for i in 1:nbins
+        x[i] = vmin + (i - 1) * binstep + binstep / 2
+        nv = 0
+        for j in 1:ndata
+            if (v[j] > x[i] - step / 2) && (v[j] <= x[i] + step / 2)
+                nv = nv + 1
+            end
+        end
+        binsize = min(vmax, x[i] + step / 2) - max(vmin, x[i] - step / 2)
+        if norm == 0
+            df[i] = nv
+        elseif norm == 1
+            df[i] = nv / (binsize * ndata)
+        end
     end
-    binsize = min(vmax,x[i]+step/2) - max(vmin,x[i]-step/2)
-    if norm == 0
-      df[i] = nv
-    elseif norm == 1
-      df[i] = nv/(binsize*ndata)
-    end
-  end
 
-  return Density(x,df,step,norm)
+    return Density(x, df, step, norm)
 end
 export fitdensity
 
-function Base.show( io :: IO, d :: Density )
-  if d.norm == 0
-    s = "number of"
-  end
-  if d.norm == 1
-    s = "probability of finding"
-  end
-  println(" 
- ------------------- Density -------------
+function Base.show(io::IO, d::Density)
+    if d.norm == 0
+        s = "number of"
+    end
+    if d.norm == 1
+        s = "probability of finding"
+    end
+    println(
+        io,
+        """
+------------------- Density -------------
 
-  d contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
+ d contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
 
- ----------------------------------------- ")
+----------------------------------------- 
+"""
+    )
 end

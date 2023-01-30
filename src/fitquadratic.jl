@@ -2,19 +2,20 @@
 # Quadratic fit
 # 
 
-struct Quadratic
-  a::Float64
-  b::Float64
-  c::Float64
-  R::Float64
-  x::Vector{Float64}
-  y::Vector{Float64}
-  ypred::Vector{Float64}
-  residues::Vector{Float64}
+struct Quadratic{T} <: Fit{T}
+    a::T
+    b::T
+    c::T
+    R::T
+    x::Vector{T}
+    y::Vector{T}
+    ypred::Vector{T}
+    residues::Vector{T}
 end
 
 """
-`fitquad(x,y)` or `fitquadratic(x,y)`
+    fitquad(x,y)
+    fitquadratic(x,y)
 
 Obtains the quadratic fit: ``y = a*x^2 + b*x + c``
 
@@ -54,36 +55,34 @@ julia> fit = fitquad(x,y)
 ```
 """
 function fitquadratic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
-  l::lower=lower(), u::upper=upper(), c=nothing,
-  options::Options=Options())
-  # Check data
-  X, Y = checkdata(X, Y, options)
-  # Set bounds
-  vars = [VarType(:a, Number, 1),
-    VarType(:b, Number, 1),
-    VarType(:c, Nothing, 1)]
-  lower, upper = setbounds(vars, l, u)
-  if c == nothing
-    # Set model
-    @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]
-    # Fit
-    fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model, fit)
-    x, y, ypred = finexy(X, options.fine, model, fit)
-    return Quadratic(fit.param..., R, x, y, ypred, fit.resid)
-  else
-    lower = lower[1:length(vars)-1]
-    upper = upper[1:length(vars)-1]
-    # Set model
-    @. model_const(x, p) = p[1] * x^2 + p[2] * x + c
-    # Fit
-    fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model_const, fit)
-    x, y, ypred = finexy(X, options.fine, model_const, fit)
-    return Quadratic(fit.param..., c, R, x, y, ypred, fit.resid)
-  end
+    l::lower=lower(), u::upper=upper(), c=nothing,
+    options::Options=Options())
+    # Check data
+    X, Y = checkdata(X, Y, options)
+    # Set bounds
+    vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
+    lower, upper = setbounds(vars, l, u)
+    if isnothing(c)
+        # Set model
+        @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]
+        # Fit
+        fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model, fit)
+        x, y, ypred = finexy(X, options.fine, model, fit)
+        return Quadratic(fit.param..., R, x, y, ypred, fit.resid)
+    else
+        lower = lower[1:length(vars)-1]
+        upper = upper[1:length(vars)-1]
+        # Set model
+        @. model_const(x, p) = p[1] * x^2 + p[2] * x + c
+        # Fit
+        fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model_const, fit)
+        x, y, ypred = finexy(X, options.fine, model_const, fit)
+        return Quadratic(fit.param..., c, R, x, y, ypred, fit.resid)
+    end
 end
 fitquad = fitquadratic
 
@@ -131,29 +130,43 @@ julia> f.(rand(10))
 ```
 """
 function (fit::Quadratic)(x::Real)
-  a = fit.a
-  b = fit.b
-  c = fit.c
-  return a * x^2 + b * x + c
+    a = fit.a
+    b = fit.b
+    c = fit.c
+    return a * x^2 + b * x + c
 end
 
 function Base.show(io::IO, fit::Quadratic)
-  println("")
-  println(" ------------------- Quadratic Fit ------------- ")
-  println("")
-  println(" Equation: y = ax^2 + bx + c ")
-  println("")
-  println(" With: a = ", fit.a)
-  println("       b = ", fit.b)
-  println("       c = ", fit.c)
-  println("")
-  println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average square residue = ", mean(fit.residues .^ 2))
-  println("")
-  println(" Predicted Y: ypred = [", fit.ypred[1], ", ", fit.ypred[2], "...")
-  println(" residues = [", fit.residues[1], ", ", fit.residues[2], "...")
-  println("")
-  println(" ----------------------------------------------- ")
+    println(io,"""
+   ------------------- Quadratic Fit -------------
+
+   Equation: y = ax^2 + bx + c
+
+   With: a = $(fit.a)
+         b = $(fit.b)
+         c = $(fit.c)
+
+   Pearson correlation coefficient, R = $(fit.R)
+   Average square residue = $(mean(fit.residues .^ 2))
+
+   Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
+   residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+
+   -----------------------------------------------
+   """)
 end
 
 export fitquad, fitquadratic
+
+@testitem "fitquadratic" begin
+    using Statistics: mean
+    x = sort(rand(10))
+    y = @. 3x^2 + 2x + 1
+    f = fitquadratic(x, y)
+    @test f.R ≈ 1
+    @test all(f.ypred - y .== f.residues)
+    ss_res = sum(f.residues .^ 2)
+    ss_tot = sum((y .- mean(y)) .^ 2)
+    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test all(f.ypred == f.(x))
+end

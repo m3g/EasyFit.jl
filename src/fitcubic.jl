@@ -2,20 +2,20 @@
 # Cubic fit
 #
 
-struct Cubic
-  a::Float64
-  b::Float64
-  c::Float64
-  d::Float64
-  R::Float64
-  x::Vector{Float64}
-  y::Vector{Float64}
-  ypred::Vector{Float64}
-  residues::Vector{Float64}
+struct Cubic{T} <: Fit{T}
+    a::T
+    b::T
+    c::T
+    d::T
+    R::T
+    x::Vector{T}
+    y::Vector{T}
+    ypred::Vector{T}
+    residues::Vector{T}
 end
 
 """
-`fitcubic(x,y)`
+    fitcubic(x,y)
 
 Obtains the cubic polynomial fit: ``y = ax^3 + bx^2 + cx + d``
 
@@ -57,37 +57,37 @@ julia> fit = fitcubic(x,y)
 ```
 """
 function fitcubic(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real};
-  l::lower=lower(), u::upper=upper(), d=nothing,
-  options::Options=Options())
-  # Check data
-  X, Y = checkdata(X, Y, options)
-  # Set bounds
-  vars = [VarType(:a, Number, 1),
-    VarType(:b, Number, 1),
-    VarType(:c, Number, 1),
-    VarType(:d, Nothing, 1)]
-  lower, upper = setbounds(vars, l, u)
-  if d == nothing
-    # Set model
-    @. model(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + p[4]
-    # Fit
-    fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model, fit)
-    x, y, ypred = finexy(X, options.fine, model, fit)
-    return Cubic(fit.param..., R, x, y, ypred, fit.resid)
-  else
-    lower = lower[1:length(vars)-1]
-    upper = upper[1:length(vars)-1]
-    # Set model
-    @. model_const(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + d
-    # Fit
-    fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model_const, fit)
-    x, y, ypred = finexy(X, options.fine, model, fit)
-    return Cubic(fit.param..., d, R, x, y, ypred, fit.resid)
-  end
+    l::lower=lower(), u::upper=upper(), d=nothing,
+    options::Options=Options())
+    # Check data
+    X, Y = checkdata(X, Y, options)
+    # Set bounds
+    vars = [ VarType(:a, Number, 1),
+             VarType(:b, Number, 1),
+             VarType(:c, Number, 1),
+             VarType(:d, Nothing, 1) ]
+    lower, upper = setbounds(vars, l, u)
+    if inothing(d)
+        # Set model
+        @. model(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + p[4]
+        # Fit
+        fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model, fit)
+        x, y, ypred = finexy(X, options.fine, model, fit)
+        return Cubic(fit.param..., R, x, y, ypred, fit.resid)
+    else
+        lower = lower[1:length(vars)-1]
+        upper = upper[1:length(vars)-1]
+        # Set model
+        @. model_const(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + d
+        # Fit
+        fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model_const, fit)
+        x, y, ypred = finexy(X, options.fine, model, fit)
+        return Cubic(fit.param..., d, R, x, y, ypred, fit.resid)
+    end
 end
 
 """
@@ -133,31 +133,45 @@ julia> f.(rand(10))
 ```
 """
 function (fit::EasyFit.Cubic)(x::Real)
-  a = fit.a
-  b = fit.b
-  c = fit.c
-  d = fit.d
-  return a * x^3 + b * x^2 + c * x + d
+    a = fit.a
+    b = fit.b
+    c = fit.c
+    d = fit.d
+    return a * x^3 + b * x^2 + c * x + d
 end
 
 function Base.show(io::IO, fit::Cubic)
-  println("")
-  println(" ------------------- Cubic Fit ----------------- ")
-  println("")
-  println(" Equation: y = ax^3 + bx^2 + cx + d ")
-  println("")
-  println(" With: a = ", fit.a)
-  println("       b = ", fit.b)
-  println("       c = ", fit.c)
-  println("       d = ", fit.d)
-  println("")
-  println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average square residue = ", mean(fit.residues .^ 2))
-  println("")
-  println(" Predicted Y: ypred = [", fit.ypred[1], ", ", fit.ypred[2], "...")
-  println(" residues = [", fit.residues[1], ", ", fit.residues[2], "...")
-  println("")
-  println(" ----------------------------------------------- ")
+    println(io,"""
+     ------------------- Cubic Fit -----------------
+
+     Equation: y = ax^3 + bx^2 + cx + d
+
+     With: a = $(fit.a)
+           b = $(fit.b)
+           c = $(fit.c)
+           d = $(fit.d)
+
+     Pearson correlation coefficient, R = $(fit.R))
+     Average square residue = $(mean(fit.residues .^ 2))
+
+     Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
+     residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
+
+     -----------------------------------------------
+     """)
 end
 
 export fitcubic
+
+@testitem "fitcubic" begin
+    using Statistics: mean
+    x = sort(rand(10))
+    y = @. 4*x^3 + 3*x^2 + 2*x + 1
+    f = fitcubic(x, y)
+    @test f.R ≈ 1
+    @test all(f.ypred - y .== f.residues)
+    ss_res = sum(f.residues .^ 2)
+    ss_tot = sum((y .- mean(y)) .^ 2)
+    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test all(f.ypred == f.(x))
+end

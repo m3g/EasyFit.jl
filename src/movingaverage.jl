@@ -2,16 +2,16 @@
 # Computes the moving average of the data
 #
 
-struct MovingAverage
-  n :: Int64
-  x :: Vector{Float64}
-  R :: Float64
-  residues :: Vector{Float64}
+struct MovingAverage{T} <: Fit{T}
+    n::Int
+    x::Vector{T}
+    R::T
+    residues::Vector{T}
 end
 
 """
-
-`movingaverage(x,n)` or `movavg(x,n)`
+    movingaverage(x,n)
+    movavg(x,n)
 
 Computes a moving average of `x[i]` in the range `i±(n-1)/2`. If `n` is even, we do `n ←  n + 1`.
 
@@ -35,47 +35,48 @@ julia> movingaverage(x,3)
 ```
 
 """
-function movingaverage( X :: AbstractArray{<:Real}, n :: Int )
-  if n == 0
-    error(" Please set n with movavg(x,n=10), for example. ")
-  end
-  if ! isodd(n)
-    n = n + 1
-  end
-  delta = round(Int64,(n-1)/2)
-  nX = length(X)
-  x = similar(X) 
-  for i in 1:nX
-    jmin = max(i-delta,1)
-    jmax = min(i+delta,nX)
-    x[i] = 0.
-    for j in jmin:jmax
-      x[i] = x[i] + X[j]
+function movingaverage(X::AbstractArray{<:Real}, n::Int)
+    if n == 0
+        error(" Please set n with movavg(x,n=10), for example. ")
     end
-    x[i] = x[i] / (jmax-jmin+1)
-  end
-  residues = similar(X)
-  for i in 1:nX
-    residues[i] = X[i] - x[i]
-  end
-  R = Statistics.cor(x,X)
-  return MovingAverage(n,x,R,residues)
+    if !isodd(n)
+        n = n + 1
+    end
+    delta = round(Int64, (n - 1) / 2)
+    nX = length(X)
+    x = similar(X)
+    for i in 1:nX
+        jmin = max(i - delta, 1)
+        jmax = min(i + delta, nX)
+        x[i] = 0.0
+        for j in jmin:jmax
+            x[i] = x[i] + X[j]
+        end
+        x[i] = x[i] / (jmax - jmin + 1)
+    end
+    residues = similar(X)
+    for i in 1:nX
+        residues[i] = X[i] - x[i]
+    end
+    R = Statistics.cor(x, X)
+    return MovingAverage(n, x, R, residues)
 end
-movingaverage(X::AbstractArray{<:Real};n::Int=0) = movingaverage(X,n)
-movavg = movingaverage
+movingaverage(X::AbstractArray{<:Real}; n::Int=0) = movingaverage(X, n)
+const movavg = movingaverage
 
-function Base.show( io :: IO, fit :: MovingAverage )
-  println("")
-  println(" ------------------- Moving Average ---------- ")
-  println("")
-  println(" Number of points averaged: $(fit.n) (± $(round(Int64,(fit.n-1)/2)) points)")
-  println("")
-  println(" Pearson correlation coefficient, R = ", fit.R)
-  println("")
-  println(" Averaged X: x = [",fit.x[1],", ",fit.x[2],"...")
-  println(" residues = [", fit.residues[1],", ",fit.residues[2],"...")
-  println("")
-  println(" -------------------------------------------- ")
+function Base.show(io::IO, fit::MovingAverage)
+    println(io,"""
+    ------------------- Moving Average ----------
+
+    Number of points averaged: $(fit.n) (± $(round(Int64,(fit.n-1)/2)) points.
+
+    Pearson correlation coefficient, R = $(fit.R)
+
+    Averaged X: x = [$(fit.x[1]), $(fit.x[2]), ...]
+    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+
+    --------------------------------------------
+    """)
 end
 
 export movingaverage, movavg

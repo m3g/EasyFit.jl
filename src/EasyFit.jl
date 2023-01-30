@@ -1,9 +1,13 @@
 module EasyFit
 
+using TestItems
 using Statistics
 using LsqFit
 using Interpolations
 using Parameters
+
+# supertype for all fits, to help on dispatch of common methods
+abstract type Fit{T<:AbstractFloat} end
 
 include("./LowerUpper.jl")
 include("./VarType.jl")
@@ -25,13 +29,4 @@ include("./fitspline.jl")
 include("./movingaverage.jl")
 include("./fitdensity.jl")
 
-const model_catalogue = Dict(
-  :linear => fitlinear,
-  :quadratic => fitquadratic,
-  :cubic => fitcubic,
-  :exponential => fitexponential,
-)
-
-export model_catalogue
-
-end 
+end

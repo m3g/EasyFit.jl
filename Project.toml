@@ -1,7 +1,7 @@
 name = "EasyFit"
 uuid = "fde71243-0cda-4261-b7c7-4845bd106b21"
 authors = ["Leandro Martinez <lmartine@unicamp.br>"]
-version = "0.5.8-DEV"
+version = "0.5.9-DEV"
 
 [deps]
 Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"

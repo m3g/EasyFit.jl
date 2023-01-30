@@ -2,18 +2,18 @@
 # Polynomial fit
 #
 
-struct Polynomial
-  θ::Vector{Float64}
-  d::Float64
-  R::Float64
-  x::Vector{Float64}
-  y::Vector{Float64}
-  ypred::Vector{Float64}
-  residues::Vector{Float64}
+struct Polynomial{T} <: Fit{T}
+    θ::Vector{T}
+    d::T
+    R::T
+    x::Vector{T}
+    y::Vector{T}
+    ypred::Vector{T}
+    residues::Vector{T}
 end
 
 """
-`fitpolynomial(x,y,n)`
+    fitpolynomial(x,y,n)
 
 Obtains the `n`-polynomial fit: ``y = Σᵢ θ[i] xⁱ + d``
 
@@ -36,35 +36,34 @@ julia>  x = sort(rand(10)); y = x.^3 .+ rand(10);
 ```
 """
 function fitpolynomial(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real}, n::Int=1;
-  l::lower=lower(), u::upper=upper(), d=nothing,
-  options::Options=Options())
-  # Check data
-  X, Y = checkdata(X, Y, options)
-  # Set bounds
-  vars = [VarType(:a, Vector, n),
-    VarType(:d, Nothing, 1)]
-  lower, upper = setbounds(vars, l, u)
-  if d == nothing
-    # Set model
-    @. model(x, p) = permutedims([x^i for i in 1:n]) * p
-    # Fit
-    fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model, fit)
-    x, y, ypred = finexy(X, options.fine, model, fit)
-    return Polynomial(fit.param..., R, x, y, ypred, fit.resid)
-  else
-    lower = lower[1:length(vars)-1]
-    upper = upper[1:length(vars)-1]
-    # Set model
-    @. model_const(x, p) = permutedims([x^i for i in 1:n]) * p + d
-    # Fit
-    fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
-    # Analyze results and return
-    R = pearson(X, Y, model_const, fit)
-    x, y, ypred = finexy(X, options.fine, model, fit)
-    return Polynomial(fit.param..., d, R, x, y, ypred, fit.resid)
-  end
+    l::lower=lower(), u::upper=upper(), d=nothing,
+    options::Options=Options())
+    # Check data
+    X, Y = checkdata(X, Y, options)
+    # Set bounds
+    vars = [VarType(:a, Vector, n), VarType(:d, Nothing, 1)]
+    lower, upper = setbounds(vars, l, u)
+    if isnothing(d)
+        # Set model
+        @. model(x, p) = permutedims([x^i for i in 1:n]) * p
+        # Fit
+        fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model, fit)
+        x, y, ypred = finexy(X, options.fine, model, fit)
+        return Polynomial(fit.param..., R, x, y, ypred, fit.resid)
+    else
+        lower = lower[1:length(vars)-1]
+        upper = upper[1:length(vars)-1]
+        # Set model
+        @. model_const(x, p) = permutedims([x^i for i in 1:n]) * p + d
+        # Fit
+        fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
+        # Analyze results and return
+        R = pearson(X, Y, model_const, fit)
+        x, y, ypred = finexy(X, options.fine, model, fit)
+        return Polynomial(fit.param..., d, R, x, y, ypred, fit.resid)
+    end
 end
 
 """
@@ -110,24 +109,37 @@ julia> f.(rand(10))
 ```
 """
 function (fit::EasyFit.Polynomial)(x::Real)
-  θ = fit.θ
-  d = fit.d
-  return permutedims([x^i for i in 1:n]) * θ + d
+    θ = fit.θ
+    d = fit.d
+    return permutedims([x^i for i in 1:n]) * θ + d
 end
 
 function Base.show(io::IO, fit::Polynomial)
-  println("")
-  println(" ------------------- Polynomial Fit ----------------- ")
-  println("")
-  println(" Equation: y = Σᵢ θ[i] xⁱ + d ")
-  println("")
-  println(" Pearson correlation coefficient, R = ", fit.R)
-  println(" Average square residue = ", mean(fit.residues .^ 2))
-  println("")
-  println(" Predicted Y: ypred = [", fit.ypred[1], ", ", fit.ypred[2], "...")
-  println(" residues = [", fit.residues[1], ", ", fit.residues[2], "...")
-  println("")
-  println(" ----------------------------------------------- ")
+    println(io,"""
+    ------------------- Polynomial Fit -----------------
+
+    Equation: y = Σᵢ θ[i] xⁱ + d
+
+    Pearson correlation coefficient, R = $(fit.R)
+    Average square residue = $(mean(fit.residues .^ 2))
+
+    Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
+    residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+
+    -----------------------------------------------
+    """)
 end
 
 export fitpolynomial
+
+@testitem "fitpolynomial" begin
+    using Statistics: mean
+    x = sort(rand(10))
+    y = @. 3x^2 + 2x + 1
+    f = fitpolynomial(x, y, 3)
+    @test all(f.ypred - y .== f.residues)
+    ss_res = sum(f.residues .^ 2)
+    ss_tot = sum((y .- mean(y)) .^ 2)
+    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test all(f.ypred == f.(x))
+end

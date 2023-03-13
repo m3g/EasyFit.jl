@@ -47,20 +47,20 @@ residues = [0.1613987313816987, 0.22309410865095275...
 ```
 """
 function fitlinear(
-    X::AbstractArray{T}, Y::AbstractArray{T};
+    X::AbstractArray{T1}, Y::AbstractArray{T2};
     l::lower=lower(), u::upper=upper(), b=nothing,
     options::Options=Options()
-) where {T<:Real}
+) where {T1<:Real, T2<:Real}
     # Check data
-    X, Y = checkdata(X, Y, options)
+    X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u, T)
+    lower, upper = setbounds(vars, l, u, data_type)
     if isnothing(b)
         # Set model
         @. model(x, p) = p[1] * x + p[2]
         # Initial point
-        p0 = Vector{T}(undef, 2)
+        p0 = Vector{data_type}(undef, 2)
         initP!(p0, options, lower, upper)
         # Fit
         fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
@@ -74,7 +74,7 @@ function fitlinear(
         # Set model
         @. model_const(x, p) = p[1] * x + b
         # Initial point
-        p0 = Vector{T}(undef, 1)
+        p0 = Vector{data_type}(undef, 1)
         initP!(p0, options, lower, upper)
         # Fit
         fit = curve_fit(model_const, X, Y, p0, lower=lower, upper=upper)

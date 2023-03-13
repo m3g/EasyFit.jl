@@ -56,17 +56,17 @@ julia> fit = fitcubic(x,y)
 ```
 """
 function fitcubic(
-    X::AbstractArray{T}, Y::AbstractArray{T};
+    X::AbstractArray{T1}, Y::AbstractArray{T2};
     l::lower=lower(), u::upper=upper(), d=nothing, options::Options=Options()
-) where {T<:Real}
+) where {T1<:Real, T2<:Real}
     # Check data
-    X, Y = checkdata(X, Y, options)
+    X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1),
         VarType(:b, Number, 1),
         VarType(:c, Number, 1),
         VarType(:d, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u, T)
+    lower, upper = setbounds(vars, l, u, data_type)
     if isnothing(d)
         # Set model
         @. model(x, p) = p[1] * x^3 + p[2] * x^2 + p[3] * x + p[4]

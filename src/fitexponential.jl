@@ -104,12 +104,12 @@ julia> fit = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
 ```
 """
 function fitexponential(
-    X::AbstractArray{T}, Y::AbstractArray{T};
+    X::AbstractArray{T1}, Y::AbstractArray{T2};
     n::Int=1, c=nothing, l::lower=lower(), u::upper=upper(), options::Options=Options()
-) where {T<:Real}
+) where {T1<:Real, T2<:Real}
 
     # Check data
-    X, Y = checkdata(X, Y, options)
+    X, Y, data_type = checkdata(X, Y, options)
     if isnothing(c)
         # Set model
         model(x, p) = exp_model(x, p)
@@ -117,10 +117,10 @@ function fitexponential(
         # Set bounds
         if n == 1
             vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u, T)
+            lower, upper = setbounds(vars, l, u, data_type)
         else
             vars = [VarType(:a, Vector, n), VarType(:b, Vector, n), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u, T)
+            lower, upper = setbounds(vars, l, u, data_type)
         end
         # Fit
         fit = find_best_fit(model, X, Y, 2 * n + 1, options, lower, upper)
@@ -145,10 +145,10 @@ function fitexponential(
         # Set bounds
         if n == 1
             vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u, T)
+            lower, upper = setbounds(vars, l, u, data_type)
         else
             vars = [VarType(:a, Vector, n), VarType(:b, Vector, n), VarType(:c, Nothing, 1)]
-            lower, upper = setbounds(vars, l, u, T)
+            lower, upper = setbounds(vars, l, u, data_type)
         end
         lower = lower[1:2*n]
         upper = upper[1:2*n]

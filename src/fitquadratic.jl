@@ -55,15 +55,15 @@ julia> fit = fitquad(x,y)
 ```
 """
 function fitquadratic(
-    X::AbstractArray{T}, Y::AbstractArray{T};
+    X::AbstractArray{T1}, Y::AbstractArray{T2};
     l::lower=lower(), u::upper=upper(), c=nothing,
     options::Options=Options()
-) where {T<:Real}
+) where {T1<:Real, T2<:Real}
     # Check data
-    X, Y = checkdata(X, Y, options)
+    X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u, T)
+    lower, upper = setbounds(vars, l, u, data_type)
     if isnothing(c)
         # Set model
         @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]

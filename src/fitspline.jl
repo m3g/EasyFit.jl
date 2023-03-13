@@ -31,7 +31,7 @@ julia> fit = fitspline(x,y)
 ```
 """
 function fitspline(X::AbstractArray{<:Real}, Y::AbstractArray{<:Real}, options::Options)
-    X, Y = checkdata(X, Y, options)
+    X, Y, _ = checkdata(X, Y, options)
     t = 1:length(X)
     A = hcat(X, Y)
     itp = Interpolations.scale(interpolate(A,

@@ -1,14 +1,20 @@
+# requires Iterpolations
+module SplineFitExt
+
+using TestItems
+using Interpolations
+import EasyFit: Fit, fitspline, Options, checkdata
+
 #
 # Spline
 #
-
 struct Spline{T} <: Fit{T}
     x::Vector{T}
     y::Vector{T}
 end
 
 """
-    fitspline(x,y)`
+    fitspline(x,y)
 
 Computes a spline. 
 
@@ -47,20 +53,20 @@ function (fit::Spline)(x::Real)
 end
 
 function Base.show(io::IO, fit::Spline)
-    println(io,
+    println(io,chomp(
         """
         -------- Spline fit ---------------------------
 
         x spline: x = [$(fit.x[1]), $(fit.x[2]), ...]
         y spline: y = [$(fit.y[1]), $(fit.y[2]), ...]
 
-        -----------------------------------------------"""
-    )
+        -----------------------------------------------
+        """
+    ))
 end
 
-export fitspline
-
 @testitem "spline" begin
+    using Interpolations
 
     x = rand(10)
     y = rand(10)
@@ -74,4 +80,6 @@ export fitspline
     #@test eltype(fit.x) = Float32
 
 end
+
+end # module
 

@@ -202,9 +202,14 @@ julia> fit = fitexp(x,y,n=3)
 
 ## Splines
 
-Use the `fitspline` function:
+The fitting of splines requires the use of the `Interpolations` package
+(this explicit requirement was introduced in version 0.6 of `EasyFit`,
+and depends on `julia >= 1.9`).
+
+To use the `fitspline` function, do:
 
 ```julia
+julia> using EasyFit, Interpolations
 
 julia> fit = fitspline(x,y)
 

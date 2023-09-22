@@ -3,7 +3,6 @@ module EasyFit
 using TestItems
 using Statistics
 using LsqFit
-using Interpolations
 using Parameters
 
 # supertype for all fits, to help on dispatch of common methods
@@ -24,8 +23,13 @@ include("./fitlinear.jl")
 include("./fitquadratic.jl")
 include("./fitcubic.jl")
 include("./fitexponential.jl")
-include("./fitspline.jl")
 include("./movingaverage.jl")
 include("./fitdensity.jl")
+
+# fitspline is defined in ext/SplineFitExt.jl
+export fitspline
+function fitspline(args...) 
+    error("Load first the `Interpolations` package to use the `fitspline` function.")
+end
 
 end

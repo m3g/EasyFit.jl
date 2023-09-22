@@ -28,8 +28,9 @@ include("./fitdensity.jl")
 
 # fitspline is defined in ext/SplineFitExt.jl
 export fitspline
-function fitspline(args...) 
-    error("Load first the `Interpolations` package to use the `fitspline` function.")
+fitspline(args...) = error("Load first the `Interpolations` package to use the `fitspline` function.")
+@testitem "fitspline error" begin
+    @test_throws "Load first the `Interpolations` package to use the `fitspline` function." fitspline()
 end
 
 end

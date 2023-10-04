@@ -18,7 +18,7 @@ SplineFitExt = "Interpolations"
 
 [compat]
 Interpolations = "0.12, 0.13, 0.14"
-LsqFit = "0.11, 0.12, 0.13"
+LsqFit = "0.11, 0.12, 0.13, 0.14"
 Parameters = "0.12"
 TestItems = "0.1"
 julia = "1.9"

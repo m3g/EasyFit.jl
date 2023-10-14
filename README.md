@@ -30,6 +30,7 @@ few specificities:
   - [Linear fit](#linear-fit)
   - [Quadratic fit](#quadratic-fit)
   - [Cubic fit](#cubic-fit)
+  - [N-th degree fit](#n-th-degree-fit)
   - [Exponential fits](#exponential-fits)
   - [Splines](#splines)
   - [Moving Averages](#moving-averages)

@@ -1,7 +1,6 @@
 #
 # Ndgr fit: fit to an n-th degree polynomial
 #
-
 struct Ndgr{T} <: Fit{T}
     lscoeff::Vector{T}
     R::T
@@ -14,40 +13,45 @@ end
 """
     fitndgr(x,y,n)
 
-Obtains the quadratic fit: ``y = p[n+1]*x^n + p[n]*x^(n-1) + ... + p[2]*x + p[1]``
+Obtains the polynomial fit of degree `n`: `y = p[n+1]*x^n + p[n]*x^(n-1) + ... + p[2]*x + p[1]`
 
 Optional lower and upper bounds for p[i] can be provided using two arrays of length n+1, for example:
 
 ```
-fitndgr(x,y,4; l=[-1,-1.,-1,-1], u=[5.,7.,8.,7.))
+fitndgr(x,y,4; l=fill(-1.0, 5), u=[5.0, 7.0, 8.0, 7.0, 5.0])
 ```
+
 """
 function fitndgr(
     X::AbstractArray{T1}, Y::AbstractArray{T2}, n::T3;
-    l=[-Inf], u=[Inf], c=nothing,
+    l=nothing, u=nothing, c=nothing,
     options::Options=Options()
-) where {T1<:Real, T2<:Real, T3<:Int}
+) where {T1<:Real,T2<:Real,T3<:Int}
     if n > 3
         # Check data
         X, Y, data_type = checkdata(X, Y, options)
         # Set bounds
-        if length(l) == n+1
+        if isnothing(l)
+            lower = fill(-Inf, n + 1)
+        elseif length(l) == n + 1
             lower = l
         else
-            lower = fill(l[1],n+1)
+            throw(ArgumentError("Length of lower bound l must be n + 1, got $(length(l))"))
         end
-        lower = convert(typeof(Y), lower)
-        if length(u) == n+1
+        if isnothing(u)
+            upper = fill(+Inf, n + 1)
+        elseif length(u) == n + 1
             upper = u
         else
-            upper = fill(u[1],n+1)
+            throw(ArgumentError("Length of upper bound u must be n + 1, got $(length(u))"))
         end
+        lower = convert(typeof(Y), lower)
         upper = convert(typeof(Y), upper)
         if isnothing(c)
             # Set model
-            model(x, p) = sum([p[i] .* (x.^(n+1-i)) for i in 1:n+1])
+            model(x, p) = sum(p[i] * (x .^ (i - 1)) for i in n+1:-1:1)
             # Fit
-            fit = find_best_fit(model, X, Y, n+1, options, lower, upper)
+            fit = find_best_fit(model, X, Y, n + 1, options, lower, upper)
             # Analyze results and return
             R = pearson(X, Y, model, fit)
             x, y, ypred = finexy(X, options.fine, model, fit)
@@ -56,7 +60,7 @@ function fitndgr(
             lower = lower[1:n]
             upper = upper[1:n]
             # Set model
-            model_const(x, p) = sum([p[i] .* (x.^(n+1-i)) for i in 1:n]) + c
+            model_const(x, p) = sum(p[i] * (x^i) for i in n:-1:1) + c
             # Fit
             fit = find_best_fit(model_const, X, Y, n, options, lower, upper)
             # Analyze results and return
@@ -65,45 +69,45 @@ function fitndgr(
             return Ndgr([fit.param..., c], R, x, y, ypred, fit.resid)
         end
     else
-        if l == [-Inf]
+        if isnothing(l)
             l = EasyFit.lower()
         end
-        if u == [Inf]
+        if isnothing(u)
             u = EasyFit.upper()
         end
         if n == 1
             return fitlinear(
                 X, Y;
-                l = l, u = u, b=c,
-                options = options
+                l=l, u=u, b=c,
+                options=options
             )
         elseif n == 2
             return fitquadratic(
                 X, Y;
-                l = l, u = u, c=c,
-                options = options
+                l=l, u=u, c=c,
+                options=options
             )
         elseif n == 3
             return fitcubic(
                 X, Y;
-                l = l, u = u, d=c,
-                options = options
+                l=l, u=u, d=c,
+                options=options
             )
         end
     end
 end
 
 function (fit::EasyFit.Ndgr)(x::Real)
-    n = length(fit.lscoeff)-1
-    return sum([fit.lscoeff[i] * x^(n+1-i) for i in 1:n+1])
+    n = length(fit.lscoeff) - 1
+    return sum(fit.lscoeff[i] * x^(i - 1) for i in n+1:-1:1)
 end
 
 function Base.show(io::IO, fit::Ndgr)
-    println(io,
+    println(io, strip(
         """
-        ------------------- n-th degree Fit -----------------
+        ------------- n-th degree polynomial degree Fit -------------
 
-        Equation: y = sum([p[i] * x^(n+1-i) for i in 1:n+1])
+        Equation: y = sum(p[i] * x^(i-1) for i in n+1:-1:1)
 
         With: p = $(fit.lscoeff)
 
@@ -113,7 +117,8 @@ function Base.show(io::IO, fit::Ndgr)
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
         residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
 
-        -----------------------------------------------"""
+        -------------------------------------------------------------
+        """)
     )
 end
 
@@ -184,6 +189,14 @@ end
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+
+    f = fitndgr(x, y, 4, l=[-Inf, -Inf, -Inf, 5.0, -Inf])
+    @test f.R ≈ 1.0 atol = 1e-3
+    @test f.lscoeff[4] ≈ 5.0 atol = 1e-5
+
+    f = fitndgr(x, y, 4, u=[+Inf, +Inf, +Inf, -5.0, +Inf])
+    @test f.R ≈ 1.0 atol = 1e-3
+    @test f.lscoeff[4] ≈ -5.0 atol = 1e-5
 
     x = Float32.(x)
     y = Float32.(y)

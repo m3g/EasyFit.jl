@@ -103,7 +103,7 @@ function (fit::EasyFit.Ndgr)(x::Real)
 end
 
 function Base.show(io::IO, fit::Ndgr)
-    println(io, strip(
+    println(io, chomp(
         """
         ------------- n-th degree polynomial degree Fit -------------
 
@@ -111,7 +111,7 @@ function Base.show(io::IO, fit::Ndgr)
 
         With: p = $(fit.lscoeff)
 
-        Pearson correlation coefficient, R = $(fit.R))
+        Pearson correlation coefficient, R = $(fit.R)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]

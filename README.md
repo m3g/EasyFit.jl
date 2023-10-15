@@ -151,27 +151,26 @@ julia> fitcubic(x,y)
 
 <a name="n-th degree"/>
 
-## n-th degree fit
+## N-th degree polynomial fit
 
 Use the `fitndgr` function:
 
 ```julia
-julia> fitndgr(x,y,4) 
+julia> fitndgr(x,y,4)
 
-------------------- n-th degree Fit -----------------
+------------- n-th degree polynomial degree Fit -------------
 
-Equation: y = sum([p[i] * x^(n+1-i) for i in 1:n+1])
+Equation: y = sum(p[i] * x^(i-1) for i in n+1:-1:1)
 
-With: p = [5.999999999982563, 4.0000000000389395, 2.9999999999705995, 2.0000000000085376, 0.9999999999992248]
+With: p = [1.0000000000011207, 1.99999999996782, 3.0000000001850315, 3.999999999655522, 6.000000000197637]
 
-Pearson correlation coefficient, R = 1.0)
-Average square residue = 1.2410803495196144e-27
+Pearson correlation coefficient, R = 1.0
+Average square residue = 2.2956403558488966e-25
 
-Predicted Y: ypred = [ 1.364051294611539, 1.569323341085304, ...]
-residues = [ -4.707345624410664e-14, 4.1522341120980855e-14, ...]
+Predicted Y: ypred = [ 1.036097252072566, 1.23390364829286, ...]
+residues = [ 6.104006189389111e-13, -5.706546346573305e-13, ...]
 
------------------------------------------------
-
+-------------------------------------------------------------
 
 ```
 

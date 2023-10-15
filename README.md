@@ -30,6 +30,7 @@ few specificities:
   - [Linear fit](#linear-fit)
   - [Quadratic fit](#quadratic-fit)
   - [Cubic fit](#cubic-fit)
+  - [N-th degree fit](#n-th-degree-fit)
   - [Exponential fits](#exponential-fits)
   - [Splines](#splines)
   - [Moving Averages](#moving-averages)
@@ -144,6 +145,32 @@ julia> fitcubic(x,y)
  residues = [-0.021614675301217884, 0.0668157091306878...
 
  ----------------------------------------------- 
+
+
+```
+
+<a name="n-th degree"/>
+
+## n-th degree fit
+
+Use the `fitndgr` function:
+
+```julia
+julia> fitndgr(x,y,4) 
+
+------------------- n-th degree Fit -----------------
+
+Equation: y = sum([p[i] * x^(n+1-i) for i in 1:n+1])
+
+With: p = [5.999999999982563, 4.0000000000389395, 2.9999999999705995, 2.0000000000085376, 0.9999999999992248]
+
+Pearson correlation coefficient, R = 1.0)
+Average square residue = 1.2410803495196144e-27
+
+Predicted Y: ypred = [ 1.364051294611539, 1.569323341085304, ...]
+residues = [ -4.707345624410664e-14, 4.1522341120980855e-14, ...]
+
+-----------------------------------------------
 
 
 ```

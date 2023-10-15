@@ -30,7 +30,7 @@ few specificities:
   - [Linear fit](#linear-fit)
   - [Quadratic fit](#quadratic-fit)
   - [Cubic fit](#cubic-fit)
-  - [N-th degree fit](#n-th-degree-fit)
+  - [N-th degree fit](#n-th-degree-polynomial-fit)
   - [Exponential fits](#exponential-fits)
   - [Splines](#splines)
   - [Moving Averages](#moving-averages)
@@ -148,8 +148,6 @@ julia> fitcubic(x,y)
 
 
 ```
-
-<a name="n-th degree"/>
 
 ## N-th degree polynomial fit
 

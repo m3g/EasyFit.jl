@@ -15,7 +15,7 @@ Our aim is to provide a package for quick fits without having to think about the
 
 ## Installation
 
-```julia
+```julia-repl
 julia> ] add EasyFit
 
 julia> using EasyFit

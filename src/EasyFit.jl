@@ -4,6 +4,7 @@ using TestItems
 using Statistics
 using LsqFit
 using Parameters
+using Unitful: ustrip, oneunit
 
 # supertype for all fits, to help on dispatch of common methods
 abstract type Fit{T<:AbstractFloat} end

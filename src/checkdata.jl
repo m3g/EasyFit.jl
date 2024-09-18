@@ -8,11 +8,13 @@ function check_size_and_type(X, c, data_type)
     return vec(data_type.(X))
 end
 
-function checkdata(X::AbstractArray{T1}, Y::AbstractArray{T2}, options::Options) where {T1<:Real, T2<:Real}
+function checkdata(X::AbstractArray{T1}, Y::AbstractArray{T2}, options::Options) where {T1<:Number, T2<:Number}
     if length(X) != length(Y)
         throw(ArgumentError("Input x and y vectors must have the same length."))
     end
-    data_type = promote_type(Float32,T1,T2)
+    X = ustrip.(X)
+    Y = ustrip.(Y)
+    data_type = promote_type(Float32,eltype(X),eltype(Y))
     X = check_size_and_type(X, "X", data_type)
     Y = check_size_and_type(Y, "Y", data_type)
     # Set some reasonable ranges for the initial guesses

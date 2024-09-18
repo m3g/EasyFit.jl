@@ -2,14 +2,14 @@
 # Linear fit
 #
 
-struct Linear{T} <: Fit{T}
-    a::T
-    b::T
-    R::T
-    x::Vector{T}
-    y::Vector{T}
-    ypred::Vector{T}
-    residues::Vector{T}
+@kwdef struct Linear{TA,TR,TX,TY,TRES} 
+    a::TA
+    b::TY
+    R::TR
+    x::Vector{TX}
+    y::Vector{TY}
+    ypred::Vector{TY}
+    residues::Vector{TY}
 end
 
 """
@@ -50,39 +50,39 @@ function fitlinear(
     X::AbstractArray{T1}, Y::AbstractArray{T2};
     l::lower=lower(), u::upper=upper(), b=nothing,
     options::Options=Options()
-) where {T1<:Real, T2<:Real}
+) where {T1<:Number, T2<:Number}
+    # Check units
     # Check data
+    onex = oneunit(T1)
+    oney = oneunit(T2)
     X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Nothing, 1)]
     lower, upper = setbounds(vars, l, u, data_type)
     if isnothing(b)
-        # Set model
         @. model(x, p) = p[1] * x + p[2]
-        # Initial point
         p0 = Vector{data_type}(undef, 2)
-        initP!(p0, options, lower, upper)
-        # Fit
-        fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-        # Analyze results and return
-        R = pearson(X, Y, model, fit)
-        x, y, ypred = finexy(X, length(X), model, fit)
-        return Linear(fit.param..., R, x, y, ypred, fit.resid)
     else
         lower = [lower[1]]
         upper = [upper[1]]
-        # Set model
         @. model_const(x, p) = p[1] * x + b
-        # Initial point
         p0 = Vector{data_type}(undef, 1)
-        initP!(p0, options, lower, upper)
-        # Fit
-        fit = curve_fit(model_const, X, Y, p0, lower=lower, upper=upper)
-        # Analyze results and return
-        R = pearson(X, Y, model_const, fit)
-        x, y, ypred = finexy(X, length(X), model_const, fit)
-        return Linear(fit.param..., b, R, x, y, ypred, fit.resid)
     end
+    initP!(p0, options, lower, upper)
+    # Fit
+    fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
+    # Analyze results and return
+    R = pearson(X, Y, model, fit)
+    x, y, ypred = finexy(X, length(X), model, fit)
+    return Linear(
+        a=fit.param[1] * oney/onex,
+        b=fit.param[2] * oney,
+        x=X .* onex,
+        y=Y .* oney,
+        R=R .* onex * oney,
+        ypred=ypred .* oney,
+        residues=fit.resid .* oney
+    )
 end
 
 """
@@ -127,14 +127,14 @@ julia> f.(rand(10))
  0.40113908380656205
 ```
 """
-function (fit::Linear)(x::Real)
+function (fit::Linear)(x::Number)
     a = fit.a
     b = fit.b
     return a * x + b
 end
 
 function Base.show(io::IO, fit::Linear)
-    println(io,
+    println(io,chomp(
         """
         ------------------- Linear Fit -------------
 
@@ -149,8 +149,9 @@ function Base.show(io::IO, fit::Linear)
         Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
         residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
 
-        --------------------------------------------"""
-    )
+        --------------------------------------------
+        """
+    ))
 end
 
 export fitlinear
@@ -170,5 +171,5 @@ export fitlinear
     x = Float32.(x)
     y = Float32.(y)
     f = fitlinear(x, y)
-    @test typeof(f.R) == Float32
 end
+

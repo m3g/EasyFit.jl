@@ -47,36 +47,42 @@ residues = [0.1613987313816987, 0.22309410865095275...
 ```
 """
 function fitlinear(
-    X::AbstractArray{T1}, Y::AbstractArray{T2};
+    X::AbstractArray{TX}, Y::AbstractArray{TY};
     l::lower=lower(), u::upper=upper(), b=nothing,
     options::Options=Options()
-) where {T1<:Number, T2<:Number}
+) where {TX<:Number, TY<:Number}
     # Check units
     # Check data
-    onex = oneunit(T1)
-    oney = oneunit(T2)
+    onex = oneunit(TX)
+    oney = oneunit(TY)
     X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Nothing, 1)]
     lower, upper = setbounds(vars, l, u, data_type)
     if isnothing(b)
         @. model(x, p) = p[1] * x + p[2]
-        p0 = Vector{data_type}(undef, 2)
+        p0 = zeros(data_type, 2)
+        initP!(p0, options, lower, upper)
+        fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
+        R = pearson(X, Y, model, fit)
+        x, y, ypred = finexy(X, length(X), model, fit)
     else
-        lower = [lower[1]]
-        upper = [upper[1]]
+        if unit(b) != unit(TY)
+            error("The intercept b must have the same units as the dependent variable y: $(unit(TY))")
+        end
+        b = ustrip(b)
+        lower = [first(lower)]
+        upper = [first(upper)]
         @. model_const(x, p) = p[1] * x + b
-        p0 = Vector{data_type}(undef, 1)
+        p0 = zeros(data_type, 1)
+        initP!(p0, options, lower, upper)
+        fit = curve_fit(model_const, X, Y, p0, lower=lower, upper=upper)
+        R = pearson(X, Y, model_const, fit)
+        x, y, ypred = finexy(X, length(X), model_const, fit)
     end
-    initP!(p0, options, lower, upper)
-    # Fit
-    fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-    # Analyze results and return
-    R = pearson(X, Y, model, fit)
-    x, y, ypred = finexy(X, length(X), model, fit)
     return Linear(
         a=fit.param[1] * oney/onex,
-        b=fit.param[2] * oney,
+        b=isnothing(b) ? fit.param[2] * oney : oney * b,
         R=R .* onex * oney,
         x=x .* onex,
         y=y .* oney,
@@ -173,6 +179,11 @@ export fitlinear
     x = sort(rand(10))u"s"
     y = (@. 2(ustrip(x)) + 1)u"m"
     f = fitlinear(x, y)
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 2u"m/s"
+    @test f.b ≈ 1u"m"
+
+    fitlinear(x,y; b=1u"m")
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"

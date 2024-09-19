@@ -81,16 +81,17 @@ end
 @testitem "check_bounds" begin
     using EasyFit
     using Unitful
-    x = rand(10); y = rand(10)
-    @test_throws ArgumentError fitlinear(x,y; l=lower(a=3.0), u=upper(a=1.))
-    @test_throws ArgumentError fitlinear(x,y; l=lower(a=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; l=lower(b=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; l=lower(c=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; l=lower(a=[1.0, 2.0]))
-    @test_throws ArgumentError fitlinear(x,y; u=upper(a=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; u=upper(b=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; u=upper(c=3.0u"m"))
-    @test_throws ArgumentError fitlinear(x,y; u=upper(a=[1.0, 2.0]))
+    x = rand(10)
+    y = rand(10)
+    @test_throws ArgumentError fitlinear(x, y; l=lower(a=3.0), u=upper(a=1.0))
+    @test_throws ArgumentError fitlinear(x, y; l=lower(a=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; l=lower(b=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; l=lower(c=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; l=lower(a=[1.0, 2.0]))
+    @test_throws ArgumentError fitlinear(x, y; u=upper(a=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; u=upper(b=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; u=upper(c=3.0u"m"))
+    @test_throws ArgumentError fitlinear(x, y; u=upper(a=[1.0, 2.0]))
 end
 
 

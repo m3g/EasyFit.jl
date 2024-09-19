@@ -58,7 +58,7 @@ function fitquadratic(
     X::AbstractArray{TX}, Y::AbstractArray{TY};
     l::lower=lower(), u::upper=upper(), c=nothing,
     options::Options=Options()
-) where {TX<:Number, TY<:Number}
+) where {TX<:Number,TY<:Number}
     onex = oneunit(TX)
     oney = oneunit(TY)
     # Check data
@@ -84,14 +84,14 @@ function fitquadratic(
         x, y, ypred = finexy(X, options.fine, model_const, fit)
     end
     return Quadratic(
-        a = fit.param[1] * oney / (onex^2),
-        b = fit.param[2] * oney / onex,
-        c = isnothing(c) ? fit.param[3] * oney : oney * c,
-        R = R * onex * oney,
-        x = x * onex,
-        y = y * oney,
-        ypred = ypred * oney,
-        residues = fit.resid * oney
+        a=fit.param[1] * oney / (onex^2),
+        b=fit.param[2] * oney / onex,
+        c=isnothing(c) ? fit.param[3] * oney : oney * c,
+        R=R * onex * oney,
+        x=x * onex,
+        y=y * oney,
+        ypred=ypred * oney,
+        residues=fit.resid * oney
     )
 end
 const fitquad = fitquadratic
@@ -147,22 +147,23 @@ function (fit::Quadratic)(x::Real)
 end
 
 function Base.show(io::IO, fit::Quadratic)
-    println(io,"""
-   ------------------- Quadratic Fit -------------
+    println(io, chomp("""
+        ------------------- Quadratic Fit -------------
 
-   Equation: y = ax^2 + bx + c
+        Equation: y = ax^2 + bx + c
 
-   With: a = $(fit.a)
-         b = $(fit.b)
-         c = $(fit.c)
+        With: a = $(fit.a)
+              b = $(fit.b)
+              c = $(fit.c)
 
-   Pearson correlation coefficient, R = $(fit.R)
-   Average square residue = $(mean(fit.residues .^ 2))
+        Pearson correlation coefficient, R = $(fit.R)
+        Average square residue = $(mean(fit.residues .^ 2))
 
-   Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
-   residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
+        Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
+        residues = [$(fit.residues[1]), $(fit.residues[2]), ...]
 
-   -----------------------------------------------""")
+        -----------------------------------------------"""
+   ))
 end
 
 export fitquad, fitquadratic
@@ -195,26 +196,26 @@ export fitquad, fitquadratic
     @test f.a ≈ 3u"m/s^2"
     @test f.b ≈ 2u"m/s"
     @test f.c ≈ 1u"m"
-    
-    f = fitquadratic(x,y; c=1u"m")
+
+    f = fitquadratic(x, y; c=1u"m")
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 3u"m/s^2"
     @test f.b ≈ 2u"m/s"
     @test f.c ≈ 1u"m"
-    @test_throws ArgumentError fitquadratic(x,y; c=1u"s")
-    
-    f = fitquadratic(x,y; l=lower(a=4.0))
+    @test_throws ArgumentError fitquadratic(x, y; c=1u"s")
+
+    f = fitquadratic(x, y; l=lower(a=4.0))
     @test f.a ≈ 4u"m/s^2"
-    f = fitquadratic(x,y; u=upper(a=0.0))
+    f = fitquadratic(x, y; u=upper(a=0.0))
     @test f.a ≈ 0u"m/s^2"
-    f = fitquadratic(x,y; l=lower(b=2.0))
+    f = fitquadratic(x, y; l=lower(b=2.0))
     @test f.b ≈ 2u"m/s"
-    f = fitquadratic(x,y; u=upper(b=-1.0))
+    f = fitquadratic(x, y; u=upper(b=-1.0))
     @test f.b ≈ -1u"m/s"
-    f = fitquadratic(x,y; l=lower(a=5.0, b=3.0))
+    f = fitquadratic(x, y; l=lower(a=5.0, b=3.0))
     @test f.a ≈ 5u"m/s^2"
     @test f.b ≈ 3u"m/s"
-    f = fitquadratic(x,y; u=upper(a=-2.0, b=-1.0))
+    f = fitquadratic(x, y; u=upper(a=-2.0, b=-1.0))
     @test f.a ≈ -2u"m/s^2"
     @test f.b ≈ -1u"m/s"
 end

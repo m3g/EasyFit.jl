@@ -2,7 +2,7 @@
 # Linear fit
 #
 
-@kwdef struct Linear{TA,TR,TX,TY} 
+@kwdef struct Linear{TA,TR,TX,TY}
     a::TA
     b::TY
     R::TR
@@ -50,7 +50,7 @@ function fitlinear(
     X::AbstractArray{TX}, Y::AbstractArray{TY};
     l::lower=lower(), u::upper=upper(), b=nothing,
     options::Options=Options()
-) where {TX<:Number, TY<:Number}
+) where {TX<:Number,TY<:Number}
     # Check units
     # Check data
     onex = oneunit(TX)
@@ -81,7 +81,7 @@ function fitlinear(
         x, y, ypred = finexy(X, length(X), model_const, fit)
     end
     return Linear(
-        a=fit.param[1] * oney/onex,
+        a=fit.param[1] * oney / onex,
         b=isnothing(b) ? fit.param[2] * oney : oney * b,
         R=R .* onex * oney,
         x=x .* onex,
@@ -140,7 +140,7 @@ function (fit::Linear)(x::Number)
 end
 
 function Base.show(io::IO, fit::Linear)
-    println(io,chomp(
+    println(io, chomp(
         """
         ------------------- Linear Fit -------------
 
@@ -183,18 +183,18 @@ export fitlinear
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
 
-    f = fitlinear(x,y; b=1u"m")
+    f = fitlinear(x, y; b=1u"m")
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
-    @test_throws ArgumentError fitlinear(x,y; b=1u"s")
+    @test_throws ArgumentError fitlinear(x, y; b=1u"s")
 
-    f = fitlinear(x,y; l=lower(a=0.))
+    f = fitlinear(x, y; l=lower(a=0.0))
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
 
-    f = fitlinear(x,y; u=upper(a=3.))
+    f = fitlinear(x, y; u=upper(a=3.0))
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"

@@ -2,15 +2,15 @@
 # Quadratic fit
 # 
 
-struct Quadratic{T} <: Fit{T}
-    a::T
-    b::T
-    c::T
-    R::T
-    x::Vector{T}
-    y::Vector{T}
-    ypred::Vector{T}
-    residues::Vector{T}
+@kwdef struct Quadratic{TA,TB,TR,TX,TY}
+    a::TA
+    b::TB
+    c::TY
+    R::TR
+    x::Vector{TX}
+    y::Vector{TY}
+    ypred::Vector{TY}
+    residues::Vector{TY}
 end
 
 """
@@ -55,36 +55,44 @@ julia> fit = fitquad(x,y)
 ```
 """
 function fitquadratic(
-    X::AbstractArray{T1}, Y::AbstractArray{T2};
+    X::AbstractArray{TX}, Y::AbstractArray{TY};
     l::lower=lower(), u::upper=upper(), c=nothing,
     options::Options=Options()
-) where {T1<:Real, T2<:Real}
+) where {TX<:Number, TY<:Number}
+    onex = oneunit(TX)
+    oney = oneunit(TY)
     # Check data
     X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Number, 1), VarType(:c, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u, data_type)
+    lower, upper = setbounds(vars, l, u, oney)
     if isnothing(c)
-        # Set model
         @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]
-        # Fit
         fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
-        # Analyze results and return
         R = pearson(X, Y, model, fit)
         x, y, ypred = finexy(X, options.fine, model, fit)
-        return Quadratic(fit.param..., R, x, y, ypred, fit.resid)
     else
+        if unit(c) != unit(TY)
+            throw(ArgumentError("The interecept c must have the same units as the dependent variable y: $(unit(TY))"))
+        end
+        c = ustrip(c)
         lower = lower[1:length(vars)-1]
         upper = upper[1:length(vars)-1]
-        # Set model
         @. model_const(x, p) = p[1] * x^2 + p[2] * x + c
-        # Fit
         fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
-        # Analyze results and return
         R = pearson(X, Y, model_const, fit)
         x, y, ypred = finexy(X, options.fine, model_const, fit)
-        return Quadratic(fit.param..., c, R, x, y, ypred, fit.resid)
     end
+    return Quadratic(
+        a = fit.param[1] * oney / (onex^2),
+        b = fit.param[2] * oney / onex,
+        c = isnothing(c) ? fit.param[3] * oney : oney * c,
+        R = R * onex * oney,
+        x = x * onex,
+        y = y * oney,
+        ypred = ypred * oney,
+        residues = fit.resid * oney
+    )
 end
 const fitquad = fitquadratic
 
@@ -160,6 +168,7 @@ end
 export fitquad, fitquadratic
 
 @testitem "fitquadratic" begin
+    using Unitful
     using Statistics: mean
     x = sort(rand(10))
     y = @. 3x^2 + 2x + 1
@@ -175,4 +184,37 @@ export fitquad, fitquadratic
     y = Float32.(y)
     f = fitquadratic(x, y)
     @test typeof(f.R) == Float32
+
+    # with units
+    x = sort(rand(10))u"s"
+    xu = ustrip(x)
+    y = (@. 3xu^2 + 2xu + 1)u"m"
+
+    f = fitquadratic(x, y)
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 3u"m/s^2"
+    @test f.b ≈ 2u"m/s"
+    @test f.c ≈ 1u"m"
+    
+    f = fitquadratic(x,y; c=1u"m")
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 3u"m/s^2"
+    @test f.b ≈ 2u"m/s"
+    @test f.c ≈ 1u"m"
+    @test_throws ArgumentError fitquadratic(x,y; c=1u"s")
+    
+    f = fitquadratic(x,y; l=lower(a=4.0))
+    @test f.a ≈ 4u"m/s^2"
+    f = fitquadratic(x,y; u=upper(a=0.0))
+    @test f.a ≈ 0u"m/s^2"
+    f = fitquadratic(x,y; l=lower(b=2.0))
+    @test f.b ≈ 2u"m/s"
+    f = fitquadratic(x,y; u=upper(b=-1.0))
+    @test f.b ≈ -1u"m/s"
+    f = fitquadratic(x,y; l=lower(a=5.0, b=3.0))
+    @test f.a ≈ 5u"m/s^2"
+    @test f.b ≈ 3u"m/s"
+    f = fitquadratic(x,y; u=upper(a=-2.0, b=-1.0))
+    @test f.a ≈ -2u"m/s^2"
+    @test f.b ≈ -1u"m/s"
 end

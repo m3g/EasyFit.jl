@@ -58,7 +58,7 @@ function fitlinear(
     X, Y, data_type = checkdata(X, Y, options)
     # Set bounds
     vars = [VarType(:a, Number, 1), VarType(:b, Nothing, 1)]
-    lower, upper = setbounds(vars, l, u, data_type)
+    lower, upper = setbounds(vars, l, u, oney)
     if isnothing(b)
         @. model(x, p) = p[1] * x + p[2]
         p0 = zeros(data_type, 2)
@@ -68,7 +68,7 @@ function fitlinear(
         x, y, ypred = finexy(X, length(X), model, fit)
     else
         if unit(b) != unit(TY)
-            error("The intercept b must have the same units as the dependent variable y: $(unit(TY))")
+            throw(ArgumentError("The intercept b must have the same units as the dependent variable y: $(unit(TY))"))
         end
         b = ustrip(b)
         lower = [first(lower)]
@@ -183,7 +183,18 @@ export fitlinear
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
 
-    fitlinear(x,y; b=1u"m")
+    f = fitlinear(x,y; b=1u"m")
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 2u"m/s"
+    @test f.b ≈ 1u"m"
+    @test_throws ArgumentError fitlinear(x,y; b=1u"s")
+
+    f = fitlinear(x,y; l=lower(a=0.))
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 2u"m/s"
+    @test f.b ≈ 1u"m"
+
+    f = fitlinear(x,y; u=upper(a=3.))
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"

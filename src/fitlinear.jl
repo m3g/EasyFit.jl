@@ -2,7 +2,7 @@
 # Linear fit
 #
 
-@kwdef struct Linear{TA,TR,TX,TY,TRES} 
+@kwdef struct Linear{TA,TR,TX,TY} 
     a::TA
     b::TY
     R::TR
@@ -77,9 +77,9 @@ function fitlinear(
     return Linear(
         a=fit.param[1] * oney/onex,
         b=fit.param[2] * oney,
-        x=X .* onex,
-        y=Y .* oney,
         R=R .* onex * oney,
+        x=x .* onex,
+        y=y .* oney,
         ypred=ypred .* oney,
         residues=fit.resid .* oney
     )
@@ -158,6 +158,7 @@ export fitlinear
 
 @testitem "fitlinear" begin
     using Statistics: mean
+    using Unitful
     x = sort(rand(10))
     y = @. 2x + 1
     f = fitlinear(x, y)
@@ -168,8 +169,12 @@ export fitlinear
     @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
-    x = Float32.(x)
-    y = Float32.(y)
+    # with units
+    x = sort(rand(10))u"s"
+    y = (@. 2(ustrip(x)) + 1)u"m"
     f = fitlinear(x, y)
+    @test f.R ≈ 1u"m*s"
+    @test f.a ≈ 2u"m/s"
+    @test f.b ≈ 1u"m"
 end
 

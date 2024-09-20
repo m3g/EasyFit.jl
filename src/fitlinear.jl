@@ -182,6 +182,7 @@ export fitlinear
     @test f.R ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
+    @test f(1.0u"s") ≈ 3.0u"m"
 
     f = fitlinear(x, y; b=1u"m")
     @test f.R ≈ 1u"m*s"

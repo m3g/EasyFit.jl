@@ -139,7 +139,7 @@ julia> f.(rand(10))
  1.600204246377446
 ```
 """
-function (fit::Quadratic)(x::Real)
+function (fit::Quadratic)(x::Number)
     a = fit.a
     b = fit.b
     c = fit.c
@@ -196,6 +196,8 @@ export fitquad, fitquadratic
     @test f.a ≈ 3u"m/s^2"
     @test f.b ≈ 2u"m/s"
     @test f.c ≈ 1u"m"
+    @test f(1.0u"s") ≈ 6.0u"m"
+
 
     f = fitquadratic(x, y; c=1u"m")
     @test f.R ≈ 1u"m*s"

@@ -13,17 +13,16 @@ function find_best_fit(model, X, Y, np, options, lower, upper)
         try
             initP!(p0, options, lower, upper)
             fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-            sum_residues = sum(fit.resid .^ 2)
-            if abs(sum_residues - best) < options.besttol
-                nbest = nbest + 1
-                if sum_residues < best
+            sum_residues = sum(abs2, fit.resid)
+            fit_improve = sum_residues - best
+            if fit_improve < options.besttol
+                if fit_improve < 0
+                    nbest = 1
                     best = sum_residues
                     best_fit = deepcopy(fit)
+                else
+                    nbest = nbest + 1
                 end
-            elseif sum_residues < best
-                nbest = 1
-                best = sum_residues
-                best_fit = deepcopy(fit)
             end
         catch msg
             if options.debug

@@ -312,7 +312,7 @@ julia> histogram(x,xlabel="x",label="",alpha=0.3,framestyle=:box,normalize=true)
 julia> plot!(density.x,density.d,linewidth=2,label="density",ylabel="Probability within ± 0.25")
 
 ```
-<img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/density.png">
+<img src="https://raw.githubusercontent.com/m3g/EasyFit/main/docs/density.png">
 
 <a name="bounds"/>
 

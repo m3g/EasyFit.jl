@@ -305,11 +305,11 @@ Example:
 ```julia-repl
 julia> x = randn(1000);
 
-julia> density = fitdensity(x,step=0.5,norm=0);
+julia> density = fitdensity(x,step=0.5,norm=1)
 
-julia> histogram(x,xlabel="x",ylabel="Density",label="",alpha=0.3,framestyle=:box);
+julia> histogram(x,xlabel="x",label="",alpha=0.3,framestyle=:box,normalize=true)
 
-julia> plot!(density.x,density.d,linewidth=2);
+julia> plot!(density.x,density.d,linewidth=2,label="density",ylabel="Probability within ± 0.25")
 
 ```
 <img src="https://raw.githubusercontent.com/m3g/EasyFit/master/docs/density.png">

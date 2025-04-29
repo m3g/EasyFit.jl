@@ -78,7 +78,7 @@ function fitdensity(
         end
     end
 
-    return Density(x, df, step, norm)
+    return Density(x, df, T(step), norm)
 end
 export fitdensity
 

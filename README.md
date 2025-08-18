@@ -1,3 +1,7 @@
+[![Tests](https://img.shields.io/badge/build-passing-green)](https://github.com/m3g/EasyFit.jl/actions)
+[![codecov](https://codecov.io/gh/m3g/EasyFit.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/m3g/EasyFit.jl)
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+
 # EasyFit
 
 Easy interface for obtaining fits of 2D data.

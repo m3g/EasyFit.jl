@@ -13,13 +13,32 @@ end
 
 Obtains the density function given data sampled.
 
-Use `step=(Float64)` to control the bin step. Use `norm=(0 or 1)` to set
-if the number of data points or the probability of finding a data point
+Use `step` to control the bin step. Use `norm=(0 or 1)` to set if the number of data points or the probability of finding a data point
 within ± step/2 will be output.
 
 By default, `norm=1` (probability) and the step is `(xmax-xmin)/100`.
 
-# Examples
+# Arguments
+
+- `x::AbstractVector{T}`: The data points to compute the density function from.
+- `nbins::Int`: Number of bins to use for the density function.
+- `step::T`: Step size for the bins. If not provided, it is calculated
+    as `(xmax - xmin) / nbins`.
+- `steptype::String`: Type of step size, either "absolute" or "relative". Default is "absolute".
+- `vmin::T`: Minimum value for the bins. If not provided, it is calculated as the minimum of `x`.
+- `vmax::T`: Maximum value for the bins. If not provided, it is calculated as the maximum of `x`.
+- `norm::Int64`: Normalization type, either `0` (number of data points) or `1` (probability). Default is `1`.
+
+# Returns
+
+A `Density` object containing:
+
+- `x`: Bin centers of the density function.
+- `d`: Density values corresponding to the bin centers.
+- `step`: The step size used for the bins.
+- `norm`: Normalization type used (0 for number of data points, 1 for probability).
+
+# Example
 ```jldoctest
 julia> x = randn(1000)
 
@@ -58,9 +77,8 @@ function fitdensity(
         end
     end
 
-    x = Vector{T}(undef, nbins)
-    df = Vector{T}(undef, nbins)
-
+    x = zeros(T, nbins)
+    df = zeros(T, nbins)
     binstep = (vmax - vmin) / nbins
     for i in 1:nbins
         x[i] = vmin + (i - 1) * binstep + binstep / 2
@@ -70,14 +88,12 @@ function fitdensity(
                 nv = nv + 1
             end
         end
-        binsize = min(vmax, x[i] + step / 2) - max(vmin, x[i] - step / 2)
         if norm == 0
             df[i] = nv
         elseif norm == 1
-            df[i] = nv / (binsize * ndata)
+            df[i] = nv / ndata
         end
     end
-
     return Density(x, df, T(step), norm)
 end
 export fitdensity
@@ -89,11 +105,13 @@ function Base.show(io::IO, d::Density)
     if d.norm == 1
         s = "probability of finding"
     end
-    println(io,
+    print(io,
         """
         ------------------- Density -------------
 
-         d contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
+         Fields:
+            `x` contains the bin centers of the density function
+            `d` contains the $s data points within x ± $(round(d.step/2,sigdigits=3))
 
         -----------------------------------------"""
     )

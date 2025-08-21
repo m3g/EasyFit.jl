@@ -284,37 +284,32 @@ Use `plot(ma.x,ma.y)` to plot the moving average.
 
 ## Density function
 
-Use the `fitdensity` to obtain the density function (continuous histogram)
-of a data set `x`:
+Use the `fitdensity` to obtain the density function (continuous histogram) of a data set `x`:
 
-```julia
-
-julia> x = randn(1000)
-
-julia> density = fitdensity(x)
-
- ------------------- Density -------------
-
-  d contains the probability of finding data points within x ± 0.25
-
- -----------------------------------------
-
-```
 Options are the step size (`step=0.5`) and normalization type 
 (probability by default, with `norm=1` or number of data points,
 with `norm=0`).
 
 Example:
 
-```julia-repl
-julia> x = randn(1000);
+```julia
+julia> using EasyFit, Plots
 
-julia> density = fitdensity(x,step=0.5,norm=1)
+julia> x = randn(1000)
 
-julia> histogram(x,xlabel="x",label="",alpha=0.3,framestyle=:box,normalize=true)
+julia> density = fitdensity(x,vmin=-4, vmax=4, step=0.5, norm=1)
+------------------- Density -------------
 
-julia> plot!(density.x,density.d,linewidth=2,label="density",ylabel="Probability within ± 0.25")
+ Fields:
+    `x` contains the bin centers of the density function
+    `d` contains the probability of finding data points within x ± 0.25
 
+-----------------------------------------
+
+julia> plot(density.x,density.d,linewidth=2,label="density",ylabel="Probability within ± 0.25")
+
+# Compare with discrete histogram - the probabilities at center value of the bins match
+julia> histogram!(x,xlabel="x",label="",alpha=0.3,framestyle=:box, bins=-4:0.5:4, normalize=:probability)
 ```
 <img src="https://raw.githubusercontent.com/m3g/EasyFit/main/docs/density.png">
 

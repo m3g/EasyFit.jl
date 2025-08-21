@@ -311,7 +311,7 @@ julia> plot(density.x,density.d,linewidth=2,label="density",ylabel="Probability 
 # Compare with discrete histogram - the probabilities at center value of the bins match
 julia> histogram!(x,xlabel="x",label="",alpha=0.3,framestyle=:box, bins=-4:0.5:4, normalize=:probability)
 ```
-<img width=300px src="https://raw.githubusercontent.com/m3g/EasyFit/main/docs/density.png">
+<img width="50%" src="https://raw.githubusercontent.com/m3g/EasyFit/main/docs/density.png">
 
 <a name="bounds"/>
 

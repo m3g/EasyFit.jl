@@ -10,6 +10,8 @@
     y::Vector{TY}
     ypred::Vector{TY}
     residues::Vector{TY}
+    sd_a::TA
+    sd_b::TY
 end
 
 """
@@ -18,6 +20,17 @@ end
 Obtains the linear fit: ``y = a*x + b``
 
 Optional lower and upper bounds for a, and constant b can be provided using, for example:
+
+The output is a `Linear` struct with fields:
+- `a`: slope of the linear fit
+- `b`: intercept of the linear fit
+- `R`: Pearson correlation coefficient
+- `x`: x data used in the fit
+- `y`: y data used in the fit
+- `ypred`: predicted y values from the fit
+- `residues`: residues of the fit (y - ypred)
+- `sd_a`: standard deviation (error) in a
+- `sd_b`: standard deviation (error) in b
 
 ```
 fitlinear(x,y, l=lower(a=0.), b=3)
@@ -28,21 +41,20 @@ fitlinear(x,y, l=lower(a=0.), b=3)
 julia> x = sort(rand(10)) ; y = sort(rand(10));
 
 julia> fit = fitlinear(x,y)
+------------------- Linear Fit -------------
 
-------------------- Linear Fit ------------- 
+Equation: y = ax + b
 
-Equation: y = ax + b 
+With: a = 1.158930569179642 ± 0.6538824813074927
+      b = -0.1251714526967127 ± 0.3588742142656203
 
-With: a = 1.0448783208110997
-      b = 0.18817627115683894
+Pearson correlation coefficient, R = 0.9696101474036224
+Average square residue = 0.004113279571449428
 
-Pearson correlation coefficient, R = 0.8818586822210751
-Average absolute residue = 0.14274752107157443
+Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
+residues = [0.08428396483020295, 0.05555828441380739, ...]
 
-Predicted Y: ypred = [0.1987357699444139, 0.32264343301109627...
-residues = [0.1613987313816987, 0.22309410865095275...
-
--------------------------------------------- 
+--------------------------------------------
 
 ```
 """
@@ -80,14 +92,23 @@ function fitlinear(
         R = pearson(X, Y, model_const, fit)
         x, y, ypred = finexy(X, length(X), model_const, fit)
     end
+    a=fit.param[1]
+    b=isnothing(b) ? fit.param[2] : b
+    sd_a = sqrt(
+            length(X)*sum((Y[i] - (X[i]*a + b))^2 for i in eachindex(X)) /
+            (2*sum((X[i] - mean(X))^2 for i in eachindex(X)))
+        )
+    sd_b = sd_a * sqrt(mean(abs2, X))
     return Linear(
-        a=fit.param[1] * oney / onex,
-        b=isnothing(b) ? fit.param[2] * oney : oney * b,
+        a=a * oney / onex,
+        b=b * oney,
         R=R .* onex * oney,
         x=x .* onex,
         y=y .* oney,
         ypred=ypred .* oney,
-        residues=fit.resid .* oney
+        residues=fit.resid .* oney,
+        sd_a=sd_a * oney / onex,
+        sd_b=sd_b * oney,
     )
 end
 
@@ -102,22 +123,20 @@ Calling the the fitted estimator on a new sample generates point predictions. To
 julia> x = sort(rand(10)) ; y = sort(rand(10));
 
 julia> f = fitlinear(x,y)
+------------------- Linear Fit -------------
 
- ------------------- Linear Fit ------------- 
+Equation: y = ax + b
 
- Equation: y = ax + b 
+With: a = 1.158930569179642 ± 0.6538824813074927
+      b = -0.1251714526967127 ± 0.3588742142656203
 
- With: a = 0.7492056732121763
-       b = 0.19051493263850805
+Pearson correlation coefficient, R = 0.9696101474036224
+Average square residue = 0.004113279571449428
 
- Pearson correlation coefficient, R = 0.9880617647915537
- Average square residue = 0.0011903365407044974
+Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
+residues = [0.08428396483020295, 0.05555828441380739, ...]
 
- Predicted Y: ypred = [0.19131831893286483, 0.2588265305624418...
- residues = [-0.015828020422002875, -0.0503384398812427...
-
- -------------------------------------------- 
-
+--------------------------------------------
 
 julia> f.(rand(10))
 10-element Vector{Float64}:
@@ -146,8 +165,8 @@ function Base.show(io::IO, fit::Linear)
 
         Equation: y = ax + b
 
-        With: a = $(fit.a)
-              b = $(fit.b)
+        With: a = $(fit.a) ± $(fit.sd_a)
+              b = $(fit.b) ± $(fit.sd_b)
 
         Pearson correlation coefficient, R = $(fit.R)
         Average square residue = $(mean(fit.residues .^ 2))

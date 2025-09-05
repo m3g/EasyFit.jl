@@ -53,21 +53,20 @@ To perform a linear fitting, do:
 julia> x = sort(rand(10)); y = sort(rand(10)); # some data
 
 julia> fit = fitlinear(x,y)
+------------------- Linear Fit -------------
 
- ------------------- Linear Fit ------------- 
+Equation: y = ax + b
 
- Equation: y = ax + b 
+With: a = 1.158930569179642 ± 0.6538824813074927
+      b = -0.1251714526967127 ± 0.3588742142656203
 
- With: a = 0.9245529646308137
-       b = 0.08608398402393584
+Pearson correlation coefficient, R = 0.9696101474036224
+Average square residue = 0.004113279571449428
 
- Pearson correlation coefficient, R = 0.765338307304594
+Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
+residues = [0.08428396483020295, 0.05555828441380739, ...]
 
- Predicted y = [-0.009488291459872424, -0.004421217036880542... 
- Residues = [-0.08666886144188027, -0.12771486789744962... 
-
- -------------------------------------------- 
-
+--------------------------------------------
 
 ```
 
@@ -75,15 +74,14 @@ The `fit` data structure which comes out of `fitlinear` contains the output data
 the same names as shown in the above output:
 
 ```julia
-julia> fit.a
-0.9245529646308137
+julia> fit.a, fit.sd_a
+(1.1589305709595832, 0.6538824813074929)
 
-julia> fit.b
-0.08608398402393584
+julia> fit.b, fit.sd_b
+(-0.1251714536737672, 0.35887421426562044)
 
 julia> fit.R
-0.765338307304594
-
+0.9696101474036224
 
 ```
 

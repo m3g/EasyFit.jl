@@ -6,7 +6,7 @@ struct Cubic{T} <: Fit{T}
     b::T
     c::T
     d::T
-    R::T
+    R2::T
     x::Vector{T}
     y::Vector{T}
     ypred::Vector{T}
@@ -45,7 +45,7 @@ julia> fit = fitcubic(x,y)
        c = 10.018385827387148
        d = -0.8740912356800155
 
- Pearson correlation coefficient, R = 0.7831345513024988
+ Correlation coefficient, R² = 0.7831345513024988
  Average square residue = 0.0781543071776559
 
  Predicted Y: ypred = [0.24999805379642903, 0.3001612840610868...
@@ -75,7 +75,7 @@ function fitcubic(
         # Fit
         fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
         # Analyze results and return
-        R = pearson(X, Y, model, fit)
+        R = R2(X, Y, model, fit)
         x, y, ypred = finexy(X, options.fine, model, fit)
         return Cubic(fit.param..., R, x, y, ypred, fit.resid)
     else
@@ -86,7 +86,7 @@ function fitcubic(
         # Fit
         fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
         # Analyze results and return
-        R = pearson(X, Y, model_const, fit)
+        R = R2(X, Y, model_const, fit)
         x, y, ypred = finexy(X, options.fine, model, fit)
         return Cubic(fit.param..., d, R, x, y, ypred, fit.resid)
     end
@@ -113,7 +113,7 @@ julia> f = fitcubic(x,y)
        c = 2.626129810011887
        d = 0.6361773562878126
 
- Pearson correlation coefficient, R = 0.7405690253097572
+ Correlation coefficient, R² = 0.7405690253097572
  Average square residue = 0.01215483592609077
 
  Predicted Y: ypred = [0.6416314330095221, 0.6417874373639705...
@@ -154,7 +154,7 @@ function Base.show(io::IO, fit::Cubic)
               c = $(fit.c)
               d = $(fit.d)
 
-        Pearson correlation coefficient, R = $(fit.R))
+        Correlation coefficient, R² = $(f.R2))
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -171,15 +171,15 @@ export fitcubic
     x = sort(rand(10))
     y = @. 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitcubic(x, y)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitcubic(x, y)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end

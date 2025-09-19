@@ -16,7 +16,7 @@ include("./Options.jl")
 include("./checkdata.jl")
 include("./initP.jl")
 include("./finexy.jl")
-include("./pearson.jl")
+include("./R2.jl")
 include("./find_best_fit.jl")
 
 include("./FitMethods.jl")

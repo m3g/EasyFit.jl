@@ -60,7 +60,7 @@ Equation: y = ax + b
 With: a = 1.158930569179642 ± 0.6538824813074927
       b = -0.1251714526967127 ± 0.3588742142656203
 
-Pearson correlation coefficient, R = 0.9696101474036224
+Correlation coefficient, R² = 0.9696101474036224
 Average square residue = 0.004113279571449428
 
 Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
@@ -69,6 +69,7 @@ residues = [0.08428396483020295, 0.05555828441380739, ...]
 --------------------------------------------
 
 ```
+R²
 
 The `fit` data structure which comes out of `fitlinear` contains the output data with
 the same names as shown in the above output:
@@ -80,7 +81,7 @@ julia> fit.a, fit.sd_a
 julia> fit.b, fit.sd_b
 (-0.1251714536737672, 0.35887421426562044)
 
-julia> fit.R
+julia> f.R2
 0.9696101474036224
 
 ```
@@ -114,7 +115,7 @@ julia> fitquad(x,y)  # or fitquadratic(x,y)
        b = 0.07985866671623199
        c = 0.08681962205579699
 
- Pearson correlation coefficient, R = 0.765338307304594
+ Correlation coefficient, R² = 0.765338307304594
 
  Predicted y = [0.08910633345247763, 0.08943732276526263...
  Residues = [0.07660191693062993, 0.07143385689027287...
@@ -141,7 +142,7 @@ julia> fitcubic(x,y)
        c = 1.431666717127516
        d = -0.10389199522825227
 
- Pearson correlation coefficient, R = 0.765338307304594
+ Correlation coefficient, R² = 0.765338307304594
 
  Predicted Y: ypred = [0.024757602237563042, 0.1762724543346461...
  residues = [-0.021614675301217884, 0.0668157091306878...
@@ -164,7 +165,7 @@ Equation: y = sum(p[i] * x^(i-1) for i in n+1:-1:1)
 
 With: p = [1.0000000000011207, 1.99999999996782, 3.0000000001850315, 3.999999999655522, 6.000000000197637]
 
-Pearson correlation coefficient, R = 1.0
+Correlation coefficient, R² = 1.0
 Average square residue = 2.2956403558488966e-25
 
 Predicted Y: ypred = [ 1.036097252072566, 1.23390364829286, ...]
@@ -191,7 +192,7 @@ julia> fitexp(x,y) # or fitexponential
        b = 0.4408664103095801
        C = 1.4408664103095801
 
- Pearson correlation coefficient, R = 0.765338307304594
+ Correlation coefficient, R² = 0.765338307304594
 
  Predicted Y: ypred = [0.10558554154948542, 0.16605481935145136...
  residues = [0.059213264010704494, 0.056598074147493044...
@@ -215,7 +216,7 @@ julia> fit = fitexp(x,y,n=3)
        b = [0.02763465220057311, -46969.25088088338, -4.403370258345724]
        C = 3.543252432454542
 
- Pearson correlation coefficient, R = 0.765338307304594
+ Correlation coefficient, R² = 0.765338307304594
 
  Predicted Y: ypred = [0.024313571992034433, 0.1635108558614995...
  residues = [-0.022058705546746493, 0.05405411065754118...
@@ -264,7 +265,7 @@ julia> ma = movavg(x,50)
 
  Number of points averaged: 51 (± 25 points)
 
- Pearson correlation coefficient, R = 0.9916417123050962
+ Correlation coefficient, R² = 0.9916417123050962
 
  Averaged Y: y = [0.14243985510210114, 0.14809841636897675...
  residues = [-0.14230394758154755, -0.12866864179092025...

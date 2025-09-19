@@ -5,7 +5,7 @@
 @kwdef struct Linear{TA,TR,TX,TY}
     a::TA
     b::TY
-    R::TR
+    R2::TR
     x::Vector{TX}
     y::Vector{TY}
     ypred::Vector{TY}
@@ -24,7 +24,7 @@ Optional lower and upper bounds for a, and constant b can be provided using, for
 The output is a `Linear` struct with fields:
 - `a`: slope of the linear fit
 - `b`: intercept of the linear fit
-- `R`: Pearson correlation coefficient
+- `R2`: R2 correlation coefficient
 - `x`: x data used in the fit
 - `y`: y data used in the fit
 - `ypred`: predicted y values from the fit
@@ -48,7 +48,7 @@ Equation: y = ax + b
 With: a = 1.158930569179642 ± 0.6538824813074927
       b = -0.1251714526967127 ± 0.3588742142656203
 
-Pearson correlation coefficient, R = 0.9696101474036224
+Correlation coefficient, R² = 0.9696101474036224
 Average square residue = 0.004113279571449428
 
 Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
@@ -76,7 +76,7 @@ function fitlinear(
         p0 = zeros(data_type, 2)
         initP!(p0, options, lower, upper)
         fit = curve_fit(model, X, Y, p0, lower=lower, upper=upper)
-        R = pearson(X, Y, model, fit)
+        _R2 = R2(X, Y, model, fit)
         x, y, ypred = finexy(X, length(X), model, fit)
     else
         if unit(b) != unit(TY)
@@ -89,7 +89,7 @@ function fitlinear(
         p0 = zeros(data_type, 1)
         initP!(p0, options, lower, upper)
         fit = curve_fit(model_const, X, Y, p0, lower=lower, upper=upper)
-        R = pearson(X, Y, model_const, fit)
+        _R2 = R2(X, Y, model_const, fit)
         x, y, ypred = finexy(X, length(X), model_const, fit)
     end
     a=fit.param[1]
@@ -102,7 +102,7 @@ function fitlinear(
     return Linear(
         a=a * oney / onex,
         b=b * oney,
-        R=R .* onex * oney,
+        R2=_R2 .* onex * oney,
         x=x .* onex,
         y=y .* oney,
         ypred=ypred .* oney,
@@ -130,7 +130,7 @@ Equation: y = ax + b
 With: a = 1.158930569179642 ± 0.6538824813074927
       b = -0.1251714526967127 ± 0.3588742142656203
 
-Pearson correlation coefficient, R = 0.9696101474036224
+Correlation coefficient, R² = 0.9696101474036224
 Average square residue = 0.004113279571449428
 
 Predicted Y: ypred = [0.1044876257374221, 0.2072397615587609, ...]
@@ -168,7 +168,7 @@ function Base.show(io::IO, fit::Linear)
         With: a = $(fit.a) ± $(fit.sd_a)
               b = $(fit.b) ± $(fit.sd_b)
 
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(fit.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -187,35 +187,35 @@ export fitlinear
     x = sort(rand(10))
     y = @. 2x + 1
     f = fitlinear(x, y)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     # with units
     x = sort(rand(10))u"s"
     y = (@. 2(ustrip(x)) + 1)u"m"
     f = fitlinear(x, y)
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
     @test f(1.0u"s") ≈ 3.0u"m"
 
     f = fitlinear(x, y; b=1u"m")
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
     @test_throws ArgumentError fitlinear(x, y; b=1u"s")
 
     f = fitlinear(x, y; l=lower(a=0.0))
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
 
     f = fitlinear(x, y; u=upper(a=3.0))
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
 end

@@ -5,7 +5,7 @@
 struct MovingAverage{T} <: Fit{T}
     n::Int
     x::Vector{T}
-    R::T
+    R2::T
     residues::Vector{T}
 end
 
@@ -26,7 +26,7 @@ julia> movingaverage(x,3)
 
  Number of points averaged: 3 (± 1 points)
 
- Pearson correlation coefficient, R = 0.3532754137104625
+ Correlation coefficient, R² = 0.3532754137104625
 
  Averaged X: x = [0.5807828672543551, 0.40496733381946143...
  residues = [-0.22791917753944557, 0.4037347109743393...
@@ -71,7 +71,7 @@ function Base.show(io::IO, fit::MovingAverage)
 
         Number of points averaged: $(fit.n) (± $(round(Int,(fit.n-1)/2)) points.
 
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(f.R2)
 
         Averaged X: x = [$(fit.x[1]), $(fit.x[2]), ...]
         residues = [$(fit.residues[1]), $(fit.residues[2]), ...]

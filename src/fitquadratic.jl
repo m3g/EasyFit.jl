@@ -6,7 +6,7 @@
     a::TA
     b::TB
     c::TY
-    R::TR
+    R2::TR
     x::Vector{TX}
     y::Vector{TY}
     ypred::Vector{TY}
@@ -44,7 +44,7 @@ julia> fit = fitquad(x,y)
        b = -1.24215737650827
        c = 0.9410816080128867
 
- Pearson correlation coefficient, R = 0.8452759310204063
+ Correlation coefficient, R² = 0.8452759310204063
  Average square residue = 0.039620067833833005
 
  Predicted Y: ypred = [0.778952191090992, 0.7759243614999851...
@@ -69,7 +69,7 @@ function fitquadratic(
     if isnothing(c)
         @. model(x, p) = p[1] * x^2 + p[2] * x + p[3]
         fit = find_best_fit(model, X, Y, length(vars), options, lower, upper)
-        R = pearson(X, Y, model, fit)
+        _R2 = R2(X, Y, model, fit)
         x, y, ypred = finexy(X, options.fine, model, fit)
     else
         if unit(c) != unit(TY)
@@ -80,14 +80,14 @@ function fitquadratic(
         upper = upper[1:length(vars)-1]
         @. model_const(x, p) = p[1] * x^2 + p[2] * x + c
         fit = find_best_fit(model_const, X, Y, length(vars) - 1, options, lower, upper)
-        R = pearson(X, Y, model_const, fit)
+        _R2 = R2(X, Y, model_const, fit)
         x, y, ypred = finexy(X, options.fine, model_const, fit)
     end
     return Quadratic(
         a=fit.param[1] * oney / (onex^2),
         b=fit.param[2] * oney / onex,
         c=isnothing(c) ? fit.param[3] * oney : oney * c,
-        R=R * onex * oney,
+        R2= _R2 * onex * oney,
         x=x * onex,
         y=y * oney,
         ypred=ypred * oney,
@@ -116,7 +116,7 @@ julia> f = fitquad(x,y)
        b = -1.2832262361743607
        c = 0.3650565332863989
 
- Pearson correlation coefficient, R = 0.8641384358642901
+ Correlation coefficient, R² = 0.8641384358642901
  Average square residue = 0.06365720683818799
 
  Predicted Y: ypred = [0.2860912283436672, 0.2607175680542409...
@@ -156,7 +156,7 @@ function Base.show(io::IO, fit::Quadratic)
               b = $(fit.b)
               c = $(fit.c)
 
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(f.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -174,17 +174,17 @@ export fitquad, fitquadratic
     x = sort(rand(10))
     y = @. 3x^2 + 2x + 1
     f = fitquadratic(x, y)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitquadratic(x, y)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 
     # with units
     x = sort(rand(10))u"s"
@@ -192,7 +192,7 @@ export fitquad, fitquadratic
     y = (@. 3xu^2 + 2xu + 1)u"m"
 
     f = fitquadratic(x, y)
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 3u"m/s^2"
     @test f.b ≈ 2u"m/s"
     @test f.c ≈ 1u"m"
@@ -200,7 +200,7 @@ export fitquad, fitquadratic
 
 
     f = fitquadratic(x, y; c=1u"m")
-    @test f.R ≈ 1u"m*s"
+    @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 3u"m/s^2"
     @test f.b ≈ 2u"m/s"
     @test f.c ≈ 1u"m"

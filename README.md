@@ -69,6 +69,7 @@ residues = [0.08428396483020295, 0.05555828441380739, ...]
 --------------------------------------------
 
 ```
+R²
 
 The `fit` data structure which comes out of `fitlinear` contains the output data with
 the same names as shown in the above output:
@@ -80,7 +81,7 @@ julia> fit.a, fit.sd_a
 julia> fit.b, fit.sd_b
 (-0.1251714536737672, 0.35887421426562044)
 
-julia> fit.R
+julia> f.R2
 0.9696101474036224
 
 ```

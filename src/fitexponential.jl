@@ -6,7 +6,7 @@ struct SingleExponential{T} <: Fit{T}
     a::T
     b::T
     c::T
-    R::T
+    R2::T
     x::Vector{T}
     y::Vector{T}
     ypred::Vector{T}
@@ -18,7 +18,7 @@ struct MultipleExponential{T} <: Fit{T}
     a::Vector{T}
     b::Vector{T}
     c::T
-    R::T
+    R2::T
     x::Vector{T}
     y::Vector{T}
     ypred::Vector{T}
@@ -93,7 +93,7 @@ julia> fit = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
        b = [0.02688289803014393, 0.5000000000002596]
        c = 0.37499999999999856
 
- Pearson correlation coefficient, R = 1.0
+ Correlation coefficient, R² = 1.0
  Average square residue = 1.1639900380979497e-29
 
  Predicted Y: ypred = [1.0000000000000002, 0.4595845520228801...
@@ -126,7 +126,7 @@ function fitexponential(
         # Fit
         fit = find_best_fit(model, X, Y, 2 * n + 1, options, lower, upper)
         # Analyze and return
-        R = pearson(X, Y, model, fit)
+        R = R2(X, Y, model, fit)
         x, y, ypred = finexy(X, options.fine, model, fit)
         if n == 1
             return SingleExponential(fit.param[1], fit.param[2], fit.param[3],
@@ -156,7 +156,7 @@ function fitexponential(
         # Fit
         fit = find_best_fit(model_const, X, Y, 2 * n, options, lower, upper)
         # Analyze and return
-        R = pearson(X, Y, model_const, fit)
+        R = R2(X, Y, model_const, fit)
         x, y, ypred = finexy(X, options.fine, model_const, fit)
         if n == 1
             return SingleExponential(fit.param[1], fit.param[2], c, R, x, y, ypred, fit.resid)
@@ -191,7 +191,7 @@ julia> f = fitexp(x,y,l=lower(b=0.),u=upper(b=10.),c=5.)
        b = 3.503891711388752
        c = 5.0
 
- Pearson correlation coefficient, R = 0.8451556303228667
+ Correlation coefficient, R² = 0.8451556303228667
  Average square residue = 0.018962968678623245
 
  Predicted Y: ypred = [0.5349351918795522, 0.8336327629821874...
@@ -238,7 +238,7 @@ julia> f = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
        b = [0.4660083805047125, 0.4780084734705192]
        c = 1.8482858404652986
 
- Pearson correlation coefficient, R = 0.9933941403034768
+ Correlation coefficient, R² = 0.9933941403034768
  Average square residue = 0.0007163482924343316
 
  Predicted Y: ypred = [0.5864990290966858, 0.5582571702322241...
@@ -280,7 +280,7 @@ function Base.show(io::IO, fit::SingleExponential)
               b = $(fit.b)
               c = $(fit.c)
         
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(f.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -301,7 +301,7 @@ function Base.show(io::IO, fit::MultipleExponential)
               b = $(fit.b)
               c = $(fit.c)
 
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(f.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [$(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -318,26 +318,26 @@ export fitexp, fitexponential
     x = sort(rand(10))
     y = @. 3 * exp(-x / 2) + 1
     f = fitexp(x, y)
-    @test f.R > 0.9
+    @test f.R2 > 0.9
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred ≈ f.(x))
 
     f = fitexp(x, y; n=2)
-    @test f.R > 0.9
+    @test f.R2 > 0.9
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred ≈ f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitexp(x, y)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 
     f = fitexp(x, y; n=2)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end

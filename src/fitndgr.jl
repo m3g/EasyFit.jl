@@ -3,7 +3,7 @@
 #
 struct Ndgr{T} <: Fit{T}
     lscoeff::Vector{T}
-    R::T
+    R2::T
     x::Vector{T}
     y::Vector{T}
     ypred::Vector{T}
@@ -53,7 +53,7 @@ function fitndgr(
             # Fit
             fit = find_best_fit(model, X, Y, n + 1, options, lower, upper)
             # Analyze results and return
-            R = pearson(X, Y, model, fit)
+            R = R2(X, Y, model, fit)
             x, y, ypred = finexy(X, options.fine, model, fit)
             return Ndgr(fit.param, R, x, y, ypred, fit.resid)
         else
@@ -64,7 +64,7 @@ function fitndgr(
             # Fit
             fit = find_best_fit(model_const, X, Y, n, options, lower, upper)
             # Analyze results and return
-            R = pearson(X, Y, model_const, fit)
+            R = R2(X, Y, model_const, fit)
             x, y, ypred = finexy(X, options.fine, model_const, fit)
             return Ndgr([fit.param..., c], R, x, y, ypred, fit.resid)
         end
@@ -111,7 +111,7 @@ function Base.show(io::IO, fit::Ndgr)
 
         With: p = $(fit.lscoeff)
 
-        Pearson correlation coefficient, R = $(fit.R)
+        Correlation coefficient, R² = $(f.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -129,17 +129,17 @@ export fitndgr
     x = sort(rand(10))
     y = @. 2 * x + 1
     f = fitndgr(x, y, 1)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitndgr(x, y, 1)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end
 
 @testitem "fitndgr for n = 2" begin
@@ -147,17 +147,17 @@ end
     x = sort(rand(10))
     y = @. 3 * x^2 + 2 * x + 1
     f = fitndgr(x, y, 2)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitndgr(x, y, 2)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end
 
 @testitem "fitndgr for n = 3" begin
@@ -165,17 +165,17 @@ end
     x = sort(rand(10))
     y = @. 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitndgr(x, y, 3)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitndgr(x, y, 3)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end
 
 @testitem "fitndgr for n = 4" begin
@@ -183,23 +183,23 @@ end
     x = sort(rand(10))
     y = @. 6 * x^4 + 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitndgr(x, y, 4)
-    @test f.R ≈ 1
+    @test f.R2 ≈ 1
     @test all(f.ypred - y .== f.residues)
     ss_res = sum(f.residues .^ 2)
     ss_tot = sum((y .- mean(y)) .^ 2)
-    @test isapprox(f.R^2, 1 - (ss_res / ss_tot), atol=1e-5)
+    @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
 
     f = fitndgr(x, y, 4, l=[-Inf, -Inf, -Inf, 5.0, -Inf])
-    @test f.R ≈ 1.0 atol = 1e-3
+    @test f.R2 ≈ 1.0 atol = 1e-3
     @test f.lscoeff[4] ≈ 5.0 atol = 1e-5
 
     f = fitndgr(x, y, 4, u=[+Inf, +Inf, +Inf, -5.0, +Inf])
-    @test f.R ≈ 1.0 atol = 1e-3
+    @test f.R2 ≈ 1.0 atol = 1e-3
     @test f.lscoeff[4] ≈ -5.0 atol = 1e-5
 
     x = Float32.(x)
     y = Float32.(y)
     f = fitndgr(x, y, 4)
-    @test typeof(f.R) == Float32
+    @test typeof(f.R2) == Float32
 end

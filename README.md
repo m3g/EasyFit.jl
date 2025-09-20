@@ -69,7 +69,6 @@ residues = [0.08428396483020295, 0.05555828441380739, ...]
 --------------------------------------------
 
 ```
-R²
 
 The `fit` data structure which comes out of `fitlinear` contains the output data with
 the same names as shown in the above output:

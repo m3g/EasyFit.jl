@@ -98,7 +98,6 @@ function fitlinear(
     _X_var = sum((X[i] - _X_mean)^2 for i in eachindex(X))
     sd_a = sqrt(sum((Y[i] - (a*X[i] + b))^2 for i in eachindex(X)) / (_X_var * (length(X) - 2)))
     sd_b = sd_a * sqrt(mean(abs2, X))
-    @show sd_a, sd_b
     return Linear(
         a=a * oney / onex,
         b=b * oney,

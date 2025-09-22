@@ -96,8 +96,9 @@ function fitlinear(
     b=isnothing(b) ? fit.param[2] : b
     _X_mean = mean(X)
     _X_var = sum((X[i] - _X_mean)^2 for i in eachindex(X))
-    sd_a = sqrt(inv(length(X)-2) * sum((Y[i] - (a*X[i] + b))^2 for i in eachindex(X)) / _X_var)
+    sd_a = sqrt(sum((Y[i] - (a*X[i] + b))^2 for i in eachindex(X)) / (_X_var * (length(X) - 2)))
     sd_b = sd_a * sqrt(mean(abs2, X))
+    @show sd_a, sd_b
     return Linear(
         a=a * oney / onex,
         b=b * oney,
@@ -236,7 +237,7 @@ export fitlinear
         1.83	74.46
     ]
 
-    fit = fitlineat(data[:,1], data[:,2])
+    fit = fitlinear(data[:,1], data[:,2])
     @test fit.a ≈ 61.272 atol=1e-3
     @test fit.b ≈ -39.062 atol=1e-3
     @test fit.sd_a ≈ 1.776 atol=1e-3

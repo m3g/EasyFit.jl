@@ -94,10 +94,9 @@ function fitlinear(
     end
     a=fit.param[1]
     b=isnothing(b) ? fit.param[2] : b
-    sd_a = sqrt(
-            length(X)*sum((Y[i] - (X[i]*a + b))^2 for i in eachindex(X)) /
-            (2*sum((X[i] - mean(X))^2 for i in eachindex(X)))
-        )
+    _X_mean = mean(X)
+    _X_var = sum((X[i] - _X_mean)^2 for i in eachindex(X))
+    sd_a = sqrt(sum((Y[i] - (a*X[i] + b))^2 for i in eachindex(X)) / (_X_var * (length(X) - 2)))
     sd_b = sd_a * sqrt(mean(abs2, X))
     return Linear(
         a=a * oney / onex,
@@ -218,5 +217,31 @@ export fitlinear
     @test f.R2 ≈ 1u"m*s"
     @test f.a ≈ 2u"m/s"
     @test f.b ≈ 1u"m"
+
+    data = [
+        1.47	52.21
+        1.50	53.12
+        1.52	54.48
+        1.55	55.84
+        1.57	57.20
+        1.60	58.57
+        1.63	59.93
+        1.65	61.29
+        1.68	63.11
+        1.70	64.47
+        1.73	66.28
+        1.75	68.10
+        1.78	69.92
+        1.80	72.19
+        1.83	74.46
+    ]
+
+    fit = fitlinear(data[:,1], data[:,2])
+    @test fit.a ≈ 61.272 atol=1e-3
+    @test fit.b ≈ -39.062 atol=1e-3
+    @test fit.sd_a ≈ 1.776 atol=1e-3
+    @test fit.sd_b ≈ 2.938 atol=1e-3
+    @test fit.R2 ≈ 0.989 atol=1e-3
+
 end
 

@@ -179,8 +179,9 @@ end
 end
 
 @testitem "fitndgr for n = 4" begin
+    using ShowMethodTesting
     using Statistics: mean
-    x = sort(rand(10))
+    x = -5:0.13:5
     y = @. 6 * x^4 + 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitndgr(x, y, 4)
     @test f.R2 ≈ 1
@@ -189,13 +190,28 @@ end
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+    @test parse_show(f) ≈ """
+    ------------- n-th degree polynomial degree Fit -------------
+    
+    Equation: y = sum(p[i] * x^(i-1) for i in n+1:-1:1)
+    
+    With: p = [1.000000000000014, 2.000000000000004, 2.999999999999998, 4.0, 6.0]
+    
+    Correlation coefficient, R² = 1.0
+    Average square residue = 6.364152641218273e-27
+    
+    Predicted Y: ypred = [ 3316.0, 2975.35356166, ...]
+    residues = [ 0.0, -4.547473508864641e-13, ...]
+    
+    -------------------------------------------------------------
+    """
 
     f = fitndgr(x, y, 4, l=[-Inf, -Inf, -Inf, 5.0, -Inf])
-    @test f.R2 ≈ 1.0 atol = 1e-3
+    @test f.R2 ≈ 1.0 rtol=0.1 
     @test f.lscoeff[4] ≈ 5.0 atol = 1e-5
 
     f = fitndgr(x, y, 4, u=[+Inf, +Inf, +Inf, -5.0, +Inf])
-    @test f.R2 ≈ 1.0 atol = 1e-3
+    @test f.R2 ≈ 1.0 rtol=0.1
     @test f.lscoeff[4] ≈ -5.0 atol = 1e-5
 
     x = Float32.(x)

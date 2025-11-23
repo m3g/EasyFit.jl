@@ -154,7 +154,7 @@ function Base.show(io::IO, fit::Cubic)
               c = $(fit.c)
               d = $(fit.d)
 
-        Correlation coefficient, R² = $(fit.R2))
+        Correlation coefficient, R² = $(fit.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
@@ -167,8 +167,9 @@ end
 export fitcubic
 
 @testitem "fitcubic" begin
+    using ShowMethodTesting
     using Statistics: mean
-    x = sort(rand(10))
+    x = 1:0.13:10
     y = @. 4 * x^3 + 3 * x^2 + 2 * x + 1
     f = fitcubic(x, y)
     @test f.R2 ≈ 1
@@ -177,6 +178,24 @@ export fitcubic
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+    @test parse_show(f) ≈ """
+    ------------------- Cubic Fit -----------------
+    
+    Equation: y = ax^3 + bx^2 + cx + d
+    
+    With: a = 3.9999999999999982
+          b = 3.0000000000000377
+          c = 1.9999999999998166
+          d = 1.0000000000002207
+    
+    Correlation coefficient, R² = 1.0
+    Average square residue = 0.0
+    
+    Predicted Y: ypred = [ 10.000000000000073, 12.862288000000055, ...]
+    residues = [ 7.283063041541027e-14, 5.684341886080802e-14, ...]
+    
+    -----------------------------------------------
+    """
 
     x = Float32.(x)
     y = Float32.(y)

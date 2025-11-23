@@ -181,6 +181,7 @@ end
 export fitlinear
 
 @testitem "fitlinear" begin
+    using ShowMethodTesting
     using Statistics: mean
     using Unitful
     x = sort(rand(10))
@@ -242,6 +243,23 @@ export fitlinear
     @test fit.sd_a ≈ 1.776 atol=1e-3
     @test fit.sd_b ≈ 2.938 atol=1e-3
     @test fit.R2 ≈ 0.989 atol=1e-3
+
+    @test parse_show(fit) ≈ """
+    ------------------- Linear Fit -------------
+    
+    Equation: y = ax + b
+    
+    With: a = 61.27218654191589 ± 1.7759227522153571
+          b = -39.0619559185216 ± 2.93800106718343
+    
+    Correlation coefficient, R² = 0.989196922445797
+    Average square residue = 0.49937056025883503
+    
+    Predicted Y: ypred = [51.00815829809476, 52.846323894352246, ...]
+    residues = [-1.2018417019052379, -0.2736761056477519, ...]
+    
+    --------------------------------------------
+    """
 
 end
 

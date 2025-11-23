@@ -66,12 +66,21 @@ function Base.show(io::IO, fit::Spline)
 end
 
 @testitem "spline" begin
+    using ShowMethodTesting
     using Interpolations
 
-    x = rand(10)
-    y = rand(10)
+    x = sin.(-1:0.13:1)
+    y = cos.(-2:0.13:0)
     fit = fitspline(x,y)
     @test eltype(fit.x) == Float64
+    @test parse_show(fit) ≈ """
+    -------- Spline fit ---------------------------
+    
+    x spline: x = [-0.8414709848078965, -0.829563520300414, ...]
+    y spline: y = [-0.4161468365471424, -0.39690349380932594, ...]
+    
+    -----------------------------------------------
+    """
 
     # Splines do not propagate types correctly
     #x = Float32.(x)

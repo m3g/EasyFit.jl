@@ -169,9 +169,10 @@ end
 export fitquad, fitquadratic
 
 @testitem "fitquadratic" begin
+    using ShowMethodTesting
     using Unitful
     using Statistics: mean
-    x = sort(rand(10))
+    x = -2:0.13:2
     y = @. 3x^2 + 2x + 1
     f = fitquadratic(x, y)
     @test f.R2 ≈ 1
@@ -180,6 +181,23 @@ export fitquad, fitquadratic
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred == f.(x))
+    @test parse_show(f) ≈ """
+    ------------------- Quadratic Fit -------------
+    
+    Equation: y = ax^2 + bx + c
+    
+    With: a = 3.0
+          b = 2.0
+          c = 1.0
+    
+    Correlation coefficient, R² = 1.0
+    Average square residue = 1.5268275584922809e-31
+    
+    Predicted Y: ypred = [9.0, 7.750700000000002, ...]
+    residues = [0.0, 0.0, ...]
+    
+    -----------------------------------------------
+    """
 
     x = Float32.(x)
     y = Float32.(y)

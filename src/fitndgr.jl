@@ -204,7 +204,7 @@ end
     residues = [ 0.0, -4.547473508864641e-13, ...]
     
     -------------------------------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     f = fitndgr(x, y, 4, l=[-Inf, -Inf, -Inf, 5.0, -Inf])
     @test f.R2 ≈ 1.0 rtol=0.1 

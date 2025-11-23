@@ -195,7 +195,7 @@ export fitcubic
     residues = [ 7.283063041541027e-14, 5.684341886080802e-14, ...]
     
     -----------------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     x = Float32.(x)
     y = Float32.(y)

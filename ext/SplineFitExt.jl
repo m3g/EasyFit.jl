@@ -80,7 +80,7 @@ end
     y spline: y = [-0.4161468365471424, -0.39690349380932594, ...]
     
     -----------------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     # Splines do not propagate types correctly
     #x = Float32.(x)

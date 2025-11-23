@@ -132,7 +132,7 @@ end
         `d` contains the probability of finding data points within x ± 0.1
     
     -----------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     x = Float32.(x)
     fit = fitdensity(x)

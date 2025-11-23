@@ -341,7 +341,7 @@ export fitexp, fitexponential
     residues = [ 0.0, 0.0, ...]
     
     -----------------------------------------------
-    """ float_match = (x,y) -> isapprox(x,y,atol=0.01)
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     f = fitexp(x, y; n=2)
     @test f.R2 > 0.9

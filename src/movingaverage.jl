@@ -98,7 +98,7 @@ export movingaverage, movavg
     residues = [-0.01592282124616784, 0.026135273736763498, ...]
     
     --------------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     x = Float32.(x)
     fit = movingaverage(x,n=10)

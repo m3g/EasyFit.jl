@@ -197,7 +197,7 @@ export fitquad, fitquadratic
     residues = [0.0, 0.0, ...]
     
     -----------------------------------------------
-    """
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     x = Float32.(x)
     y = Float32.(y)

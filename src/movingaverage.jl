@@ -71,7 +71,7 @@ function Base.show(io::IO, fit::MovingAverage)
 
         Number of points averaged: $(fit.n) (± $(round(Int,(fit.n-1)/2)) points.
 
-        Correlation coefficient, R² = $(f.R2)
+        Correlation coefficient, R² = $(fit.R2)
 
         Averaged X: x = [$(fit.x[1]), $(fit.x[2]), ...]
         residues = [$(fit.residues[1]), $(fit.residues[2]), ...]

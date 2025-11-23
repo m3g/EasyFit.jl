@@ -280,7 +280,7 @@ function Base.show(io::IO, fit::SingleExponential)
               b = $(fit.b)
               c = $(fit.c)
         
-        Correlation coefficient, R² = $(f.R2)
+        Correlation coefficient, R² = $(fit.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]

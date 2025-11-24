@@ -106,7 +106,7 @@ julia> fit = fitexp(x,y,l=lower(b=[0.,0.]),n=2)
 function fitexponential(
     X::AbstractArray{TX}, Y::AbstractArray{TY};
     n::Int=1, c=nothing, l::lower=lower(), u::upper=upper(), options::Options=Options()
-) where {TX<:Real, TY<:Real}
+) where {TX<:Real,TY<:Real}
     onex = oneunit(TX)
     oney = oneunit(TY)
     # Check data
@@ -272,20 +272,20 @@ end
 function Base.show(io::IO, fit::SingleExponential)
     println(io,
         """
-        ------------ Single Exponential fit ----------- "
-        
+        ------------ Single Exponential fit -----------
+
         Equation: y = a exp(-x/b) + c
-        
+
         With: a = $(fit.a)
               b = $(fit.b)
               c = $(fit.c)
-        
+
         Correlation coefficient, R² = $(fit.R2)
         Average square residue = $(mean(fit.residues .^ 2))
 
         Predicted Y: ypred = [ $(fit.ypred[1]), $(fit.ypred[2]), ...]
         residues = [ $(fit.residues[1]), $(fit.residues[2]), ...]
-        
+
         -----------------------------------------------"""
     )
 end
@@ -314,8 +314,9 @@ end
 export fitexp, fitexponential
 
 @testitem "fitexponential" begin
+    using ShowMethodTesting
     using Statistics: mean
-    x = sort(rand(10))
+    x = 0.1:0.13:5
     y = @. 3 * exp(-x / 2) + 1
     f = fitexp(x, y)
     @test f.R2 > 0.9
@@ -324,6 +325,23 @@ export fitexp, fitexponential
     ss_tot = sum((y .- mean(y)) .^ 2)
     @test isapprox(f.R2, 1 - (ss_res / ss_tot), atol=1e-5)
     @test all(f.ypred ≈ f.(x))
+    @test parse_show(f) ≈ """
+    ------------ Single Exponential fit -----------
+
+    Equation: y = a exp(-x/b) + c
+    
+    With: a = 3.0
+          b = 2.0
+          c = 1.0
+    
+    Correlation coefficient, R² = 1.0
+    Average square residue = 3.8924057823405186e-33
+    
+    Predicted Y: ypred = [ 3.853688273502142, 3.674098431720494, ...]
+    residues = [ 0.0, 0.0, ...]
+    
+    -----------------------------------------------
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     f = fitexp(x, y; n=2)
     @test f.R2 > 0.9

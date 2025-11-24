@@ -118,11 +118,21 @@ function Base.show(io::IO, d::Density)
 end
 
 @testitem "fitdensity" begin
+    using ShowMethodTesting
     using Statistics: std
 
-    x = randn(100)
+    x = 0:0.1:20
     fit = fitdensity(x)
     @test eltype(fit.d) == Float64
+    @test parse_show(fit) ≈ """
+    ------------------- Density -------------
+    
+     Fields:
+        `x` contains the bin centers of the density function
+        `d` contains the probability of finding data points within x ± 0.1
+    
+    -----------------------------------------
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
 
     x = Float32.(x)
     fit = fitdensity(x)

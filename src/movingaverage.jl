@@ -83,9 +83,23 @@ end
 export movingaverage, movavg
 
 @testitem "moving average" begin
-    x = rand(100)
+    using ShowMethodTesting
+    x = sin.(-5:0.13:5)
     fit = movingaverage(x,n=10)
     @test eltype(fit.x) == Float64
+    @test parse_show(fit) ≈ """
+    ------------------- Moving Average ----------
+    
+    Number of points averaged: 11 (± 5 points.
+    
+    Correlation coefficient, R² = 0.9997773413109331
+    
+    Averaged X: x = [0.9748470959093063, 0.9614698001834519, ...]
+    residues = [-0.01592282124616784, 0.026135273736763498, ...]
+    
+    --------------------------------------------
+    """ float_match = (x,y) -> isapprox(x,y; atol=1e-3)
+
     x = Float32.(x)
     fit = movingaverage(x,n=10)
     @test eltype(fit.x) == Float32

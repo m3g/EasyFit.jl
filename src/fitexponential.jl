@@ -316,6 +316,12 @@ export fitexp, fitexponential
 @testitem "fitexponential" begin
     using ShowMethodTesting
     using Statistics: mean
+    using Random
+    # The exponential model is non-convex in `b`, so the multistart search in
+    # find_best_fit can occasionally converge to a degenerate local optimum;
+    # seed the RNG so the parse_show comparison below (which checks that the
+    # true generating parameters are recovered) is reproducible.
+    Random.seed!(1)
     x = 0.1:0.13:5
     y = @. 3 * exp(-x / 2) + 1
     f = fitexp(x, y)

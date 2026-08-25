@@ -9,49 +9,49 @@ fit = fitexp(x, y)</code></pre><pre class="documenter-example-output"><code clas
 
 Equation: y = a exp(-x/b) + c
 
-With: a = 0.305083437365702
-      b = -0.20074766557143317
-      c = 0.030124288906046678
+With: a = 0.3050834373658658
+      b = -0.20074766557145926
+      c = 0.03012428890578168
 
 Correlation coefficient, R² = 0.9999880977348544
-Average square residue = 0.0006642534841694943
+Average square residue = 0.0006642534841694786
 
-Predicted Y: ypred = [ 0.3741127701721508, 0.41988334223200313, ...]
-residues = [ 0.0009528362402886903, -0.041547350092677016, ...]
+Predicted Y: ypred = [ 0.374112770172065, 0.4198833422319349, ...]
+residues = [ 0.0009528362402029256, -0.04154735009274524, ...]
 
 -----------------------------------------------
 </code></pre><pre><code class="language-julia hljs">scatter(x, y, label=&quot;data&quot;, framestyle=:box)
-plot!(fit.x, fit.y, label=&quot;mono-exponential fit&quot;, linewidth=2)</code></pre><img src="eb8064f4.svg" alt="Example block output"/><p>Add <code>n=N</code> for a sum of <code>N</code> exponentials:</p><pre><code class="language-julia hljs">y2 = @. 0.3 * exp(5x) + 0.7 * exp(-3x) + 0.05 * rand()
+plot!(fit.x, fit.y, label=&quot;mono-exponential fit&quot;, linewidth=2)</code></pre><img src="7b9d0513.svg" alt="Example block output"/><p>Add <code>n=N</code> for a sum of <code>N</code> exponentials:</p><pre><code class="language-julia hljs">y2 = @. 0.3 * exp(5x) + 0.7 * exp(-3x) + 0.05 * rand()
 
 fit2 = fitexp(x, y2, n=2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
 
 Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
 
-With: a = [0.2807298042068901, 0.453354494601515]
-      b = [-0.19744259810595838, 0.1551159730964399]
-      c = 0.3185651676333109
+With: a = [0.301865881112783, 0.7342486782729205]
+      b = [-0.20021482019934322, 0.3871205673646169]
+      c = -0.020626490199642106
 
-Correlation coefficient, R² = 0.9999984215010881
-Average square residue = 8.329967047048754e-5
+Correlation coefficient, R² = 0.9999983845518983
+Average square residue = 8.535087603205752e-5
 
-Predicted Y: ypred = [1.0238621561932546, 1.0088766970486323, ...]
-residues = [-0.00518559219926451, 0.010903864896905868, ...]
+Predicted Y: ypred = [1.0097851531531887, 1.0119384471725585, ...]
+residues = [-0.0010922579198962001, -0.00019432144731190704, ...]
 
 -----------------------------------------------
 </code></pre><pre><code class="language-julia hljs">scatter(x, y2, label=&quot;data&quot;, framestyle=:box)
-plot!(fit2.x, fit2.y, label=&quot;bi-exponential fit&quot;, linewidth=2)</code></pre><img src="a7f65348.svg" alt="Example block output"/><p>The intercept <code>c</code> is fitted freely by default; it can be fixed to a constant value with the <code>c</code> keyword, and lower/upper bounds can be set as described in <a href="../bounds/#Bounds-and-fixed-parameters">Bounds and fixed parameters</a>:</p><pre><code class="language-julia hljs">fitexp(x, y2, n=2, c=0.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
+plot!(fit2.x, fit2.y, label=&quot;bi-exponential fit&quot;, linewidth=2)</code></pre><img src="952257f6.svg" alt="Example block output"/><p>The intercept <code>c</code> is fitted freely by default; it can be fixed to a constant value with the <code>c</code> keyword, and lower/upper bounds can be set as described in <a href="../bounds/#Bounds-and-fixed-parameters">Bounds and fixed parameters</a>:</p><pre><code class="language-julia hljs">fitexp(x, y2, n=2, c=0.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
 
 Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
 
-With: a = [0.30178841414149066, 0.7108180066961048]
-      b = [-0.20026302507318786, 0.36649975670269935]
+With: a = [0.3009373697396999, 0.71542591752802]
+      b = [-0.200097247836303, 0.37373457414467537]
       c = 0.0
 
-Correlation coefficient, R² = 0.9999955666523792
-Average square residue = 0.00023403905401409318
+Correlation coefficient, R² = 0.9999983827747133
+Average square residue = 8.544481945015926e-5
 
-Predicted Y: ypred = [1.0059627040175314, 1.007349258941899, ...]
-residues = [-0.023085044374987707, 0.009376426790172698, ...]
+Predicted Y: ypred = [1.0102044990115289, 1.0119959170492272, ...]
+residues = [-0.0006729120615560635, -0.00013685157064324827, ...]
 
 -----------------------------------------------
-</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ndegree/">« N-th degree polynomial fit</a><a class="docs-footer-nextpage" href="../expdecay/">Normalized exponential decay »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 12:45">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ndegree/">« N-th degree polynomial fit</a><a class="docs-footer-nextpage" href="../expdecay/">Normalized exponential decay »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 12:46">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

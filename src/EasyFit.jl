@@ -30,19 +30,46 @@ include("./fitdensity.jl")
 
 # fitspline is defined in ext/SplineFitExt.jl
 export fitspline
-fitspline(args...; kargs...) = error("Load first the `Interpolations` package to use the `fitspline` function.")
+function fitspline(args...; kargs...)
+    if isnothing(Base.get_extension(EasyFit, :SplineFitExt))
+        error("Load first the `Interpolations` package to use the `fitspline` function.")
+    end
+    # The Interpolations extension is loaded but no method of fitspline matches
+    # this call: raise a regular MethodError instead of a misleading message.
+    throw(MethodError(fitspline, args))
+end
 @testitem "fitspline error" begin
-    @test_throws "Load first the `Interpolations` package to use the `fitspline` function." fitspline(1)
-    @test_throws "Load first the `Interpolations` package to use the `fitspline` function." fitspline(1; x = 1)
-    @test_throws "Load first the `Interpolations` package to use the `fitspline` function." fitspline(x = 1)
+    # Note: within the full test suite, other testitems already `using Interpolations`,
+    # so the extension is loaded process-wide by the time this runs (package extensions,
+    # once triggered, stay active for the rest of the session). The "Load first..."
+    # message therefore can't be exercised here; it is covered by inspection/manual
+    # testing in a fresh session instead. What we *can* verify in-process is the actual
+    # bug fix: once the extension is loaded, a call that matches no method must raise a
+    # regular (informative) MethodError instead of the misleading "Load first..." message.
+    @test !isnothing(Base.get_extension(EasyFit, :SplineFitExt))
+    @test_throws MethodError fitspline(1)
+    @test_throws MethodError fitspline(1; x = 1)
+    @test_throws MethodError fitspline(x = 1)
 end
 
 # fitexpdecay is defined in ext/ExpDecayFitExt.jl
 export fitexpdecay
-fitexpdecay(args...; kargs...) = error("Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function.")
+function fitexpdecay(args...; kargs...)
+    if isnothing(Base.get_extension(EasyFit, :ExpDecayFitExt))
+        error("Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function.")
+    end
+    # The JuMP/Ipopt extension is loaded but no method of fitexpdecay matches
+    # this call: raise a regular MethodError instead of a misleading message.
+    throw(MethodError(fitexpdecay, args))
+end
 @testitem "fitexpdecay error" begin
-    @test_throws "Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function." fitexpdecay(1)
-    @test_throws "Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function." fitexpdecay(1; n = 1)
+    # See the note in the "fitspline error" testitem above: the "Load first..."
+    # message can't be exercised in-process here since other testitems already
+    # load JuMP/Ipopt. What we verify here is the fix itself: once the extension
+    # is loaded, a non-matching call raises a regular MethodError.
+    @test !isnothing(Base.get_extension(EasyFit, :ExpDecayFitExt))
+    @test_throws MethodError fitexpdecay(1)
+    @test_throws MethodError fitexpdecay(1; n = 1)
 end
 
 end

@@ -117,6 +117,7 @@ end
 
 """
     fitexpdecay(Y; n::Int=1, t=nothing, c=nothing, options::Options=Options())
+    fitexpdecay(t, Y; n::Int=1, c=nothing, options::Options=Options())
 
 Fits a normalized multiple-exponential decay model to `Y`:
 
@@ -128,10 +129,12 @@ least-squares problem using JuMP with the Ipopt solver, requiring
 `using JuMP, Ipopt` to be loaded.
 
 `Y` can be a plain vector or an `OffsetArray` (for example with axis
-`0:length(Y)-1`). By default the time associated to each data point is
-`index - first(index)`, i.e. the first data point is assumed to correspond
-to `t = 0`. A time vector `t` of the same length as `Y` can optionally be
-provided explicitly.
+`0:length(Y)-1`). The time associated to each data point can be given
+explicitly, either as the first positional argument (`fitexpdecay(t, Y)`) or
+with the `t` keyword (`fitexpdecay(Y; t)`); both accept a vector of the same
+length as `Y`. If no time vector is given, the time of each data point
+defaults to `index - first(index)`, i.e. the first data point is assumed to
+correspond to `t = 0`.
 
 The independent constant `c` is fitted freely (subject to `c >= 0`, and hence
 `sum(a) <= 1`) by default. It can optionally be fixed to a user-provided value
@@ -145,7 +148,7 @@ julia> using JuMP, Ipopt
 
 julia> t = 0:0.1:5; y = @. 0.7*exp(-t/0.5) + 0.3*exp(-t/3);
 
-julia> fit = fitexpdecay(y; t=collect(t), n=2)
+julia> fit = fitexpdecay(t, y; n=2)
 ```
 """
 function fitexpdecay(
@@ -169,6 +172,16 @@ function fitexpdecay(
     xfine = collect(range(tmin, tmax, length=options.fine))
     yfine = normexp_model(xfine, a, b, cfit)
     return ExpDecayFit(n, a, b, cfit, R, xfine, yfine, ypred, residues)
+end
+
+function fitexpdecay(
+    t::AbstractVector{<:Real},
+    Y::AbstractVector{<:Real};
+    n::Int=1,
+    c::Union{Nothing,Real}=nothing,
+    options::Options=Options(),
+)
+    return fitexpdecay(Y; n=n, t=t, c=c, options=options)
 end
 
 function (fit::ExpDecayFit)(x::Real)
@@ -212,6 +225,11 @@ end
     @test all(fit.ypred - y .== fit.residues)
     @test all(isapprox.(fit.ypred, fit.(t), atol=1e-6))
     @test isapprox(fit(0.0), 1.0, atol=1e-6) # y(0) == 1 by construction
+
+    # t can also be passed as the first positional argument
+    fit_pos = fitexpdecay(collect(t), y; n=2)
+    @test isapprox(fit_pos.ypred, fit.ypred, atol=1e-3)
+    @test_throws ArgumentError fitexpdecay(collect(t)[1:end-1], y; n=2)
 
     # fixed constant: y(0) == 1 always holds by construction, so data with a
     # genuine baseline must itself be normalized that way (sum(a) is then 1 - c)

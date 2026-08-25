@@ -30,16 +30,21 @@ Random.seed!(1)
 
 ## Basic usage
 
-`fitexpdecay` accepts a single vector of values. By default, the time associated to
-each data point is simply its index step, i.e. the first data point is assumed to
-correspond to `t = 0`:
+The time vector `t` can be passed as the first positional argument, just like in
+`fitexponential(x, y)`:
 
 ```@example expdecay
 t = 0:0.1:8
 y = @. 0.7 * exp(-t / 0.6) + 0.3 * exp(-t / 4) + 0.01 * randn()
 
-fit = fitexpdecay(y; n=2, t=collect(t))
+fit = fitexpdecay(t, y; n=2)
 ```
+
+Equivalently, `t` can be passed as a keyword together with a single values vector —
+`fitexpdecay(y; t, n=2)`. If no time vector is given at all, `fitexpdecay` uses the
+position of each data point (starting at zero) as its time, i.e. the first data
+point is assumed to correspond to `t = 0` (see
+[Index-based time and `OffsetArray`s](@ref) below).
 
 The fitted weights and constant always add up to one (so `fit(0) == 1`), and the
 decay rates are always positive:

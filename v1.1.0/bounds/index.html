@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Bounds and fixed parameters · EasyFit.jl</title><meta name="title" content="Bounds and fixed parameters · EasyFit.jl"/><meta property="og:title" content="Bounds and fixed parameters · EasyFit.jl"/><meta property="twitter:title" content="Bounds and fixed parameters · EasyFit.jl"/><meta name="description" content="Documentation for EasyFit.jl."/><meta property="og:description" content="Documentation for EasyFit.jl."/><meta property="twitter:description" content="Documentation for EasyFit.jl."/><meta property="og:url" content="https://m3g.github.io/EasyFit.jl/bounds/"/><meta property="twitter:url" content="https://m3g.github.io/EasyFit.jl/bounds/"/><link rel="canonical" href="https://m3g.github.io/EasyFit.jl/bounds/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">EasyFit.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../linear/">Linear fit</a></li><li><a class="tocitem" href="../quadratic/">Quadratic fit</a></li><li><a class="tocitem" href="../cubic/">Cubic fit</a></li><li><a class="tocitem" href="../ndegree/">N-th degree polynomial fit</a></li><li><a class="tocitem" href="../exponential/">Exponential fits</a></li><li><a class="tocitem" href="../expdecay/">Normalized exponential decay</a></li><li><a class="tocitem" href="../splines/">Splines</a></li><li><a class="tocitem" href="../movingaverage/">Moving averages</a></li><li><a class="tocitem" href="../density/">Density function</a></li><li class="is-active"><a class="tocitem" href>Bounds and fixed parameters</a></li><li><a class="tocitem" href="../options/">Options</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Bounds and fixed parameters</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Bounds and fixed parameters</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/m3g/EasyFit.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/m3g/EasyFit.jl/blob/main/docs/src/bounds.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Bounds-and-fixed-parameters"><a class="docs-heading-anchor" href="#Bounds-and-fixed-parameters">Bounds and fixed parameters</a><a id="Bounds-and-fixed-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Bounds-and-fixed-parameters" title="Permalink"></a></h1><p>Lower and upper bounds can be set on the parameters of most functions using the <code>l=lower(...)</code> and <code>u=upper(...)</code> keyword arguments. For example:</p><pre><code class="language-julia hljs">using EasyFit, Random
+Random.seed!(1)
+
+x = sort(rand(10))
+y = sort(rand(10))
+
+fitlinear(x, y, l=lower(a=5.0), u=upper(a=10.0))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">------------------- Linear Fit -------------
+
+Equation: y = ax + b
+
+With: a = 5.0 ± 2.4258118442636656
+      b = 0.10939648944557535 ± 1.342121650694185
+
+Correlation coefficient, R² = 0.9689439025845498
+Average square residue = 5.07983534386018
+
+Predicted Y: ypred = [0.22986804206821387, 0.35525560018618085, ...]
+residues = [0.11493274443951518, 0.17863051237333605, ...]
+
+--------------------------------------------
+</code></pre><pre><code class="language-julia hljs">y2 = @. 0.3 * exp(5x) + 0.7 * exp(-3x)
+fitexp(x, y2, n=2, l=lower(a=[0.0, 0.0]), u=upper(a=[1.0, 1.0]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
+
+Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
+
+With: a = [0.24286901538176014, 1.0]
+      b = [-0.1916298763073778, 39941.12388845093]
+      c = -0.3783283409422839
+
+Correlation coefficient, R² = 0.999920548280107
+Average square residue = 0.00419185236967261
+
+Predicted Y: ypred = [0.8970796652547437, 0.9355847716236423, ...]
+residues = [-0.09251628959823255, -0.05202541438993313, ...]
+
+-----------------------------------------------
+</code></pre><p>Bounds on the intercepts or limiting values are not supported directly, but it is possible to fix them to a constant value instead. For example:</p><pre><code class="language-julia hljs">fitlinear(x, y, b=5.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">------------------- Linear Fit -------------
+
+Equation: y = ax + b
+
+With: a = -6.185371264876846 ± 3.1224947249739716
+      b = 5.0 ± 1.7275733006563927
+
+Correlation coefficient, R² = 0.9689439025845495
+Average square residue = 8.416641666626477
+
+Predicted Y: ypred = [4.850967744034566, 4.695854024243377, ...]
+residues = [4.736032446405868, 4.519228936430532, ...]
+
+--------------------------------------------
+</code></pre><pre><code class="language-julia hljs">fitexp(x, y2, n=2, c=0.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
+
+Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
+
+With: a = [0.2999999999999984, 0.699999999999997]
+      b = [-0.19999999999999976, 0.3333333333333474]
+      c = 0.0
+
+Correlation coefficient, R² = 1.0
+Average square residue = 1.7454780123179293e-29
+
+Predicted Y: ypred = [0.9895959548529736, 0.9876101860135746, ...]
+residues = [-2.6645352591003757e-15, -7.771561172376096e-16, ...]
+
+-----------------------------------------------
+</code></pre><p>The normalized exponential-decay fit, <code>fitexpdecay</code> (see <a href="../expdecay/#Normalized-exponential-decay">Normalized exponential decay</a>), follows the same convention for its constant term <code>c</code>; its weights and decay rates instead follow built-in constraints (<span>$\sum_i a_i + c = 1$</span> and <span>$b_i &gt; 0$</span>) rather than user-set bounds.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../density/">« Density function</a><a class="docs-footer-nextpage" href="../options/">Options »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 18:05">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

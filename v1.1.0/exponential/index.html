@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Exponential fits · EasyFit.jl</title><meta name="title" content="Exponential fits · EasyFit.jl"/><meta property="og:title" content="Exponential fits · EasyFit.jl"/><meta property="twitter:title" content="Exponential fits · EasyFit.jl"/><meta name="description" content="Documentation for EasyFit.jl."/><meta property="og:description" content="Documentation for EasyFit.jl."/><meta property="twitter:description" content="Documentation for EasyFit.jl."/><meta property="og:url" content="https://m3g.github.io/EasyFit.jl/exponential/"/><meta property="twitter:url" content="https://m3g.github.io/EasyFit.jl/exponential/"/><link rel="canonical" href="https://m3g.github.io/EasyFit.jl/exponential/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">EasyFit.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../linear/">Linear fit</a></li><li><a class="tocitem" href="../quadratic/">Quadratic fit</a></li><li><a class="tocitem" href="../cubic/">Cubic fit</a></li><li><a class="tocitem" href="../ndegree/">N-th degree polynomial fit</a></li><li class="is-active"><a class="tocitem" href>Exponential fits</a></li><li><a class="tocitem" href="../expdecay/">Normalized exponential decay</a></li><li><a class="tocitem" href="../splines/">Splines</a></li><li><a class="tocitem" href="../movingaverage/">Moving averages</a></li><li><a class="tocitem" href="../density/">Density function</a></li><li><a class="tocitem" href="../bounds/">Bounds and fixed parameters</a></li><li><a class="tocitem" href="../options/">Options</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Exponential fits</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Exponential fits</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/m3g/EasyFit.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/m3g/EasyFit.jl/blob/main/docs/src/exponential.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Exponential-fits"><a class="docs-heading-anchor" href="#Exponential-fits">Exponential fits</a><a id="Exponential-fits-1"></a><a class="docs-heading-anchor-permalink" href="#Exponential-fits" title="Permalink"></a></h1><p>Use the <code>fitexp</code> (or <code>fitexponential</code>) function for a single exponential:</p><pre><code class="language-julia hljs">using EasyFit, Plots, Random
+Random.seed!(1)
+
+x = sort(rand(10))
+y = @. 0.3 * exp(5x) + 0.1 * rand()
+
+fit = fitexp(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">------------ Single Exponential fit -----------
+
+Equation: y = a exp(-x/b) + c
+
+With: a = 0.3050834373658658
+      b = -0.20074766557145926
+      c = 0.03012428890578168
+
+Correlation coefficient, R² = 0.9999880977348544
+Average square residue = 0.0006642534841694786
+
+Predicted Y: ypred = [ 0.374112770172065, 0.4198833422319349, ...]
+residues = [ 0.0009528362402029256, -0.04154735009274524, ...]
+
+-----------------------------------------------
+</code></pre><pre><code class="language-julia hljs">scatter(x, y, label=&quot;data&quot;, framestyle=:box)
+plot!(fit.x, fit.y, label=&quot;mono-exponential fit&quot;, linewidth=2)</code></pre><img src="d768ebba.svg" alt="Example block output"/><p>Add <code>n=N</code> for a sum of <code>N</code> exponentials:</p><pre><code class="language-julia hljs">y2 = @. 0.3 * exp(5x) + 0.7 * exp(-3x) + 0.05 * rand()
+
+fit2 = fitexp(x, y2, n=2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
+
+Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
+
+With: a = [0.301865881112783, 0.7342486782729205]
+      b = [-0.20021482019934322, 0.3871205673646169]
+      c = -0.020626490199642106
+
+Correlation coefficient, R² = 0.9999983845518983
+Average square residue = 8.535087603205752e-5
+
+Predicted Y: ypred = [1.0097851531531887, 1.0119384471725585, ...]
+residues = [-0.0010922579198962001, -0.00019432144731190704, ...]
+
+-----------------------------------------------
+</code></pre><pre><code class="language-julia hljs">scatter(x, y2, label=&quot;data&quot;, framestyle=:box)
+plot!(fit2.x, fit2.y, label=&quot;bi-exponential fit&quot;, linewidth=2)</code></pre><img src="cf840525.svg" alt="Example block output"/><p>The intercept <code>c</code> is fitted freely by default; it can be fixed to a constant value with the <code>c</code> keyword, and lower/upper bounds can be set as described in <a href="../bounds/#Bounds-and-fixed-parameters">Bounds and fixed parameters</a>:</p><pre><code class="language-julia hljs">fitexp(x, y2, n=2, c=0.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-------- Multiple-exponential fit -------------
+
+Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
+
+With: a = [0.3009373697396999, 0.71542591752802]
+      b = [-0.200097247836303, 0.37373457414467537]
+      c = 0.0
+
+Correlation coefficient, R² = 0.9999983827747133
+Average square residue = 8.544481945015926e-5
+
+Predicted Y: ypred = [1.0102044990115289, 1.0119959170492272, ...]
+residues = [-0.0006729120615560635, -0.00013685157064324827, ...]
+
+-----------------------------------------------
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ndegree/">« N-th degree polynomial fit</a><a class="docs-footer-nextpage" href="../expdecay/">Normalized exponential decay »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 18:05">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

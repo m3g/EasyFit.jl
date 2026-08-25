@@ -37,4 +37,12 @@ fitspline(args...; kargs...) = error("Load first the `Interpolations` package to
     @test_throws "Load first the `Interpolations` package to use the `fitspline` function." fitspline(x = 1)
 end
 
+# fitexpdecay is defined in ext/ExpDecayFitExt.jl
+export fitexpdecay
+fitexpdecay(args...; kargs...) = error("Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function.")
+@testitem "fitexpdecay error" begin
+    @test_throws "Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function." fitexpdecay(1)
+    @test_throws "Load first the `JuMP` and `Ipopt` packages to use the `fitexpdecay` function." fitexpdecay(1; n = 1)
+end
+
 end

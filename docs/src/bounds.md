@@ -35,5 +35,5 @@ fitexp(x, y2, n=2, c=0.0)
 
 The normalized exponential-decay fit, `fitexpdecay` (see [Normalized exponential decay](@ref)),
 follows the same convention for its constant term `c`; its weights and decay rates
-instead follow built-in constraints (``\sum_i a_i = 1`` and ``b_i > 0``) rather than
-user-set bounds.
+instead follow built-in constraints (``\sum_i a_i + c = 1`` and ``b_i > 0``) rather
+than user-set bounds.

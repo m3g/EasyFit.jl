@@ -13,9 +13,9 @@ import EasyFit: Fit, Options, fitexpdecay
 #
 # y(t) = sum(a[i] * exp(-t/b[i]) for i in 1:n) + c
 #
-# subject to sum(a) == 1 and b[i] > 0 for all i. The constant `c` can
-# optionally be fixed to a user-provided value, otherwise it is fitted freely
-# subject to c >= 0.
+# subject to sum(a) + c == 1 (so that y(0) == 1) and b[i] > 0 for all i. The
+# constant `c` can optionally be fixed to a user-provided value, otherwise it
+# is fitted freely subject to c >= 0.
 #
 struct ExpDecayFit{T} <: Fit{T}
     n::Int
@@ -59,12 +59,13 @@ function solve_decay_nlp(t::Vector{Float64}, y::Vector{Float64}, n::Int, c_fixed
     set_silent(jumpmodel)
     @variable(jumpmodel, a[1:n])
     @variable(jumpmodel, b[1:n] >= bmin)
-    @constraint(jumpmodel, sum(a) == 1)
     if isnothing(c_fixed)
         @variable(jumpmodel, c >= 0)
+        @constraint(jumpmodel, sum(a) + c == 1)
         @NLobjective(jumpmodel, Min,
             sum((y[k] - (sum(a[j] * exp(-t[k] / b[j]) for j in 1:n) + c))^2 for k in eachindex(t)))
     else
+        @constraint(jumpmodel, sum(a) == 1 - c_fixed)
         @NLobjective(jumpmodel, Min,
             sum((y[k] - (sum(a[j] * exp(-t[k] / b[j]) for j in 1:n) + c_fixed))^2 for k in eachindex(t)))
     end
@@ -75,12 +76,13 @@ function solve_decay_nlp(t::Vector{Float64}, y::Vector{Float64}, n::Int, c_fixed
     ntrial = 0
     while nbest < options.nbest && ntrial < options.maxtrials
         ntrial += 1
+        c0 = isnothing(c_fixed) ? 0.0 : c_fixed
         a0 = rand(n)
-        a0 ./= sum(a0)
+        a0 .*= (1 - c0) / sum(a0)
         b0 = trange .* (10.0 .^ (4 .* rand(n) .- 2))
         set_start_value.(a, a0)
         set_start_value.(b, b0)
-        isnothing(c_fixed) && set_start_value(c, 0.0)
+        isnothing(c_fixed) && set_start_value(c, c0)
         try
             optimize!(jumpmodel)
             status_ok = termination_status(jumpmodel) in (JuMP.MOI.LOCALLY_SOLVED, JuMP.MOI.OPTIMAL) &&
@@ -120,9 +122,10 @@ Fits a normalized multiple-exponential decay model to `Y`:
 
 ``y(t) = \\sum_{i=1}^n a_i \\, e^{-t/b_i} + c``
 
-subject to the constraints ``\\sum_i a_i = 1`` and ``b_i > 0`` for all decay
-rates. The fit is solved as a constrained nonlinear least-squares problem
-using JuMP with the Ipopt solver, requiring `using JuMP, Ipopt` to be loaded.
+subject to the constraints ``\\sum_i a_i + c = 1`` (so that ``y(0) = 1``) and
+``b_i > 0`` for all decay rates. The fit is solved as a constrained nonlinear
+least-squares problem using JuMP with the Ipopt solver, requiring
+`using JuMP, Ipopt` to be loaded.
 
 `Y` can be a plain vector or an `OffsetArray` (for example with axis
 `0:length(Y)-1`). By default the time associated to each data point is
@@ -130,9 +133,10 @@ using JuMP with the Ipopt solver, requiring `using JuMP, Ipopt` to be loaded.
 to `t = 0`. A time vector `t` of the same length as `Y` can optionally be
 provided explicitly.
 
-The independent constant `c` is fitted freely (subject to `c >= 0`) by default.
-It can optionally be fixed to a user-provided value with the `c` keyword,
-e.g. `c=0.0`; a fixed value is not required to be non-negative.
+The independent constant `c` is fitted freely (subject to `c >= 0`, and hence
+`sum(a) <= 1`) by default. It can optionally be fixed to a user-provided value
+with the `c` keyword, e.g. `c=0.0`; a fixed value is not required to be
+non-negative (`sum(a)` is then set to `1 - c` accordingly).
 
 # Examples
 
@@ -176,7 +180,7 @@ function Base.show(io::IO, fit::ExpDecayFit)
         """
         -------- Normalized multiple-exponential decay fit --------
 
-        Equation: y = sum(a[i] exp(-t/b[i]) for i in 1:$(fit.n)) + c, with sum(a) = 1, b .> 0, and c >= 0
+        Equation: y = sum(a[i] exp(-t/b[i]) for i in 1:$(fit.n)) + c, with sum(a) + c = 1 and b .> 0
 
         With: a = $(fit.a)
               b = $(fit.b)
@@ -202,21 +206,27 @@ end
 
     fit = fitexpdecay(y; t=collect(t), n=2)
     @test fit.R2 > 0.99
-    @test isapprox(sum(fit.a), 1.0, atol=1e-6)
+    @test isapprox(sum(fit.a) + fit.c, 1.0, atol=1e-6)
     @test all(fit.b .> 0)
     @test fit.c >= -1e-6
     @test all(fit.ypred - y .== fit.residues)
     @test all(isapprox.(fit.ypred, fit.(t), atol=1e-6))
+    @test isapprox(fit(0.0), 1.0, atol=1e-6) # y(0) == 1 by construction
 
-    # fixed constant (not required to be non-negative)
-    y2 = y .+ 1.0
-    fit2 = fitexpdecay(y2; t=collect(t), n=2, c=1.0)
-    @test fit2.c == 1.0
-    @test isapprox(sum(fit2.a), 1.0, atol=1e-6)
+    # fixed constant: y(0) == 1 always holds by construction, so data with a
+    # genuine baseline must itself be normalized that way (sum(a) is then 1 - c)
+    y2 = @. 0.4 + 0.6 * exp(-t / 1.5)
+    fit2 = fitexpdecay(y2; t=collect(t), n=1, c=0.4)
+    @test fit2.c == 0.4
+    @test isapprox(sum(fit2.a), 0.6, atol=1e-3)
     @test fit2.R2 > 0.99
+    @test isapprox(fit2(0.0), 1.0, atol=1e-6)
 
-    fit2neg = fitexpdecay(y; t=collect(t), n=2, c=-1.0)
-    @test fit2neg.c == -1.0
+    # fixing c to an arbitrary (even negative) value must not error; sum(a) is
+    # then forced to 1 - c so that y(0) == 1 still holds regardless of c
+    fit2alt = fitexpdecay(y; t=collect(t), n=2, c=-1.0)
+    @test fit2alt.c == -1.0
+    @test isapprox(sum(fit2alt.a), 2.0, atol=1e-6)
 
     # unconstrained least-squares would drive c negative here; the free fit must clamp c >= 0
     y3 = y .- 0.05

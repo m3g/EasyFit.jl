@@ -10,11 +10,12 @@ CurrentModule = EasyFit
 y(t) = \sum_{i=1}^n a_i \, e^{-t/b_i} + c
 ```
 
-subject to the constraints ``\sum_i a_i = 1``, ``b_i > 0`` for every decay rate, and
+subject to the constraints ``\sum_i a_i + c = 1`` (so that ``y(0) = 1`` always, by
+construction), ``b_i > 0`` for every decay rate, and (when `c` is fitted freely)
 ``c \geq 0``. This is the common form used, for example, to describe fluorescence or
-other time-resolved decays where the amplitudes are fractional populations that add
-up to one at ``t=0``, and the constant ``c`` accounts for an optional non-negative
-offset/baseline.
+other time-resolved decays where the amplitudes are fractional populations, and the
+constant ``c`` is the long-time baseline fraction — together they make up the whole
+population, which is normalized to one at ``t=0``.
 
 Because the amplitudes and time constants are optimized subject to nonlinear
 constraints, this fit is implemented as a
@@ -40,10 +41,11 @@ y = @. 0.7 * exp(-t / 0.6) + 0.3 * exp(-t / 4) + 0.01 * randn()
 fit = fitexpdecay(y; n=2, t=collect(t))
 ```
 
-The fitted weights always sum to one, and the decay rates are always positive:
+The fitted weights and constant always add up to one (so `fit(0) == 1`), and the
+decay rates are always positive:
 
 ```@example expdecay
-sum(fit.a), all(fit.b .> 0)
+sum(fit.a) + fit.c, all(fit.b .> 0)
 ```
 
 ```@example expdecay
@@ -71,14 +73,16 @@ data on its index scale, without having to build a separate time vector.
 
 ## Fixing the constant term
 
-The independent constant `c` is fitted freely by default, subject to ``c \geq 0``
-(in addition to ``\sum_i a_i = 1`` for the weights). It can optionally be fixed to a
-user-provided value with the `c` keyword — a fixed value is *not* required to be
-non-negative:
+Because ``\sum_i a_i + c = 1`` always holds, `y(0) = 1` regardless of how `c` is
+chosen — fixing `c` only fixes the split between the long-time baseline fraction
+(`c`) and the fraction explained by decay (`sum(a) = 1 - c`), it does not change the
+overall normalization. The independent constant `c` is fitted freely by default,
+subject to ``c \geq 0``. It can optionally be fixed to a user-provided value with the
+`c` keyword — a fixed value is *not* required to be non-negative:
 
 ```@example expdecay
-y_baseline = y .+ 0.5
-fit_fixed_c = fitexpdecay(y_baseline; n=2, t=collect(t), c=0.5)
+y_baseline = @. 0.3 + 0.7 * exp(-t / 2) + 0.01 * randn()
+fit_fixed_c = fitexpdecay(y_baseline; n=1, t=collect(t), c=0.3)
 
-fit_fixed_c.c
+fit_fixed_c.c, sum(fit_fixed_c.a)
 ```

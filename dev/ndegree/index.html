@@ -9,19 +9,19 @@ fit = fitndgr(x, y, 4)</code></pre><pre class="documenter-example-output"><code 
 
 Equation: y = sum(p[i] * x^(i-1) for i in n+1:-1:1)
 
-With: p = [1.0000000000026952, 1.9999999999348628, 3.0000000003219345, 3.9999999994619757, 6.000000000289199]
+With: p = [1.0000000000026952, 1.9999999999348608, 3.0000000003219673, 3.999999999461884, 6.000000000289266]
 
 Correlation coefficient, R² = 1.0
-Average square residue = 6.346664549010196e-25
+Average square residue = 6.3494104752136575e-25
 
-Predicted Y: ypred = [ 1.0499882010195154, 1.10610788901271, ...]
-residues = [ 1.305178187749334e-12, 2.084998840246044e-13, ...]
+Predicted Y: ypred = [ 1.0499882010195154, 1.1061078890127098, ...]
+residues = [ 1.305178187749334e-12, 2.0827783941967937e-13, ...]
 
 -------------------------------------------------------------
 </code></pre><p>The fitted coefficients <code>p[1], p[2], ..., p[n+1]</code> are stored in <code>fit.lscoeff</code>, from the independent term to the highest-degree coefficient:</p><pre><code class="language-julia hljs">fit.lscoeff</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
  1.0000000000026952
- 1.9999999999348628
- 3.0000000003219345
- 3.9999999994619757
- 6.000000000289199</code></pre><pre><code class="language-julia hljs">scatter(x, y, label=&quot;data&quot;, framestyle=:box)
-plot!(fit.x, fit.y, label=&quot;fit&quot;, linewidth=2)</code></pre><img src="2cae2cfc.svg" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../cubic/">« Cubic fit</a><a class="docs-footer-nextpage" href="../exponential/">Exponential fits »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 12:46">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 1.9999999999348608
+ 3.0000000003219673
+ 3.999999999461884
+ 6.000000000289266</code></pre><pre><code class="language-julia hljs">scatter(x, y, label=&quot;data&quot;, framestyle=:box)
+plot!(fit.x, fit.y, label=&quot;fit&quot;, linewidth=2)</code></pre><img src="de87eaaa.svg" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../cubic/">« Cubic fit</a><a class="docs-footer-nextpage" href="../exponential/">Exponential fits »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 17:27">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

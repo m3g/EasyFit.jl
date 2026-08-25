@@ -9,14 +9,14 @@ fitlinear(x, y, l=lower(a=5.0), u=upper(a=10.0))</code></pre><pre class="documen
 
 Equation: y = ax + b
 
-With: a = 5.0 ± 2.4258118442636656
-      b = 0.10939648944557535 ± 1.342121650694185
+With: a = 5.0 ± 2.425811844259398
+      b = 0.10939648944064116 ± 1.3421216506918239
 
-Correlation coefficient, R² = 0.9689439025845498
-Average square residue = 5.07983534386018
+Correlation coefficient, R² = 0.96894390258455
+Average square residue = 5.079835343842307
 
-Predicted Y: ypred = [0.22986804206821387, 0.35525560018618085, ...]
-residues = [0.11493274443951518, 0.17863051237333605, ...]
+Predicted Y: ypred = [0.2298680420632797, 0.3552556001812467, ...]
+residues = [0.11493274443458101, 0.17863051236840188, ...]
 
 --------------------------------------------
 </code></pre><pre><code class="language-julia hljs">y2 = @. 0.3 * exp(5x) + 0.7 * exp(-3x)
@@ -24,15 +24,15 @@ fitexp(x, y2, n=2, l=lower(a=[0.0, 0.0]), u=upper(a=[1.0, 1.0]))</code></pre><pr
 
 Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
 
-With: a = [0.24286901538176014, 1.0]
-      b = [-0.1916298763073778, 39941.12388845093]
-      c = -0.3783283409422839
+With: a = [0.24286901538049652, 0.9999999414631084]
+      b = [-0.19162987630718206, 39941.12383937575]
+      c = -0.37832765630400506
 
-Correlation coefficient, R² = 0.999920548280107
-Average square residue = 0.00419185236967261
+Correlation coefficient, R² = 0.9999205482801068
+Average square residue = 0.004191852369330125
 
-Predicted Y: ypred = [0.8970796652547437, 0.9355847716236423, ...]
-residues = [-0.09251628959823255, -0.05202541438993313, ...]
+Predicted Y: ypred = [0.897080291354768, 0.9355853977235492, ...]
+residues = [-0.09251566349820828, -0.052024788290026214, ...]
 
 -----------------------------------------------
 </code></pre><p>Bounds on the intercepts or limiting values are not supported directly, but it is possible to fix them to a constant value instead. For example:</p><pre><code class="language-julia hljs">fitlinear(x, y, b=5.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">------------------- Linear Fit -------------
@@ -53,15 +53,15 @@ residues = [4.736032446405868, 4.519228936430532, ...]
 
 Equation: y = sum(a[i] exp(-x/b[i]) for i in 1:2) + c
 
-With: a = [0.2999999999999984, 0.699999999999997]
-      b = [-0.19999999999999976, 0.3333333333333474]
+With: a = [0.2999999999999992, 0.699999999999998]
+      b = [-0.19999999999999987, 0.3333333333333413]
       c = 0.0
 
 Correlation coefficient, R² = 1.0
-Average square residue = 1.7454780123179293e-29
+Average square residue = 8.940012727449997e-30
 
-Predicted Y: ypred = [0.9895959548529736, 0.9876101860135746, ...]
-residues = [-2.6645352591003757e-15, -7.771561172376096e-16, ...]
+Predicted Y: ypred = [0.9895959548529747, 0.9876101860135749, ...]
+residues = [-1.5543122344752192e-15, -5.551115123125783e-16, ...]
 
 -----------------------------------------------
-</code></pre><p>The normalized exponential-decay fit, <code>fitexpdecay</code> (see <a href="../expdecay/#Normalized-exponential-decay">Normalized exponential decay</a>), follows the same convention for its constant term <code>c</code>; its weights and decay rates instead follow built-in constraints (<span>$\sum_i a_i + c = 1$</span> and <span>$b_i &gt; 0$</span>) rather than user-set bounds.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../density/">« Density function</a><a class="docs-footer-nextpage" href="../options/">Options »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 12:46">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</code></pre><p>The normalized exponential-decay fit, <code>fitexpdecay</code> (see <a href="../expdecay/#Normalized-exponential-decay">Normalized exponential decay</a>), follows the same convention for its constant term <code>c</code>; its weights and decay rates instead follow built-in constraints (<span>$\sum_i a_i + c = 1$</span> and <span>$b_i &gt; 0$</span>) rather than user-set bounds.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../density/">« Density function</a><a class="docs-footer-nextpage" href="../options/">Options »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 17:27">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
